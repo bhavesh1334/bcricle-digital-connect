@@ -1,54 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Custom animation classes */
+@layer components {
+  .animate-fade-in {
+    @apply opacity-0 animate-[fade-in_0.5s_ease-out_forwards];
+  }
+  
+  .animate-slide-up {
+    @apply opacity-0 translate-y-4 animate-[slide-up_0.5s_ease-out_forwards];
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+  
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:border-accent/50;
+  }
+}
+
 @layer base {
   :root {
+    /* BCIRCLE Brand Colors */
+    --bcircle-blue: 213 68% 23%; /* #1a365d - Deep Blue */
+    --bcircle-orange: 20 100% 45%; /* #e65c00 - Vibrant Orange */
+    --bcircle-teal: 177 50% 32%; /* #2c7a7b - Teal Accent */
+    
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 213 68% 23%; /* Same as bcircle-blue */
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 213 68% 23%; /* Same as bcircle-blue */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 213 68% 23%; /* Same as bcircle-blue */
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 213 68% 23%; /* Deep Blue */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 20 100% 45%; /* Vibrant Orange */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 213 34% 45%; /* Lighter blue */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 177 50% 32%; /* Teal Accent */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 213 10% 80%;
+    --input: 213 10% 80%;
+    --ring: 213 68% 23%; /* Same as bcircle-blue */
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-foreground: 213 68% 23%; /* Same as bcircle-blue */
+    --sidebar-primary: 213 68% 23%; /* Same as bcircle-blue */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 213 20% 92%;
+    --sidebar-accent-foreground: 213 68% 23%; /* Same as bcircle-blue */
+    --sidebar-border: 213 10% 80%;
+    --sidebar-ring: 213 68% 23%; /* Same as bcircle-blue */
   }
 
   .dark {
