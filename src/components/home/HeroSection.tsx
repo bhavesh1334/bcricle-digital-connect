@@ -22,7 +22,7 @@ const HeroSection = () => {
           </p>
           
           {/* Search Box */}
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg shadow-lg max-w-2xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.4s' }}>
+          {/* <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg shadow-lg max-w-2xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.4s' }}>
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-grow">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white h-5 w-5" />
@@ -37,13 +37,13 @@ const HeroSection = () => {
               </Button>
             </div>
           </div>
-          
+           */}
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style={{ animationDelay: '0.6s' }}>
             <Button asChild size="lg" className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white font-medium">
               <Link to="/register">Register Now</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button asChild size="lg" variant="outline" className="border-white text-white bg-white/5 hover:bg-white/10">
               <Link to="/categories">
                 Explore Raipur's Business Circle
                 <ArrowRight className="ml-2 h-4 w-4" />

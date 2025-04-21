@@ -165,7 +165,7 @@ const FeaturedBusinesses = () => {
       rating: 4.4,
       reviewCount: 28,
       location: 'Tatibandh, Raipur',
-      imageUrl: 'https://images.unsplash.com/photo-1595514535215-9a5e23f712ad',
+      imageUrl: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3',
       slug: 'spaceworks-interiors'
     }
   ];
@@ -179,7 +179,7 @@ const FeaturedBusinesses = () => {
               Featured Businesses
             </h2>
             <p className="text-muted-foreground max-w-xl">
-              Discover top-rated businesses in Raipur that are part of the BCIRCLE network.
+              Discover top-rated businesses in Raipur that are part of the CBN network.
             </p>
           </div>
           <Link to="/businesses" className="mt-4 md:mt-0 inline-flex items-center text-bcircle-blue hover:text-bcircle-orange transition-colors font-medium">

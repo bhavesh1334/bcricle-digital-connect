@@ -46,7 +46,7 @@ const WhyChooseUs = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="font-montserrat font-bold text-3xl md:text-4xl mb-4 text-bcircle-blue">
-            Why Choose BCIRCLE
+            Why Choose CBN
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             The platform built specifically for Chhattisgarh's business ecosystem, making local connections easier than ever.

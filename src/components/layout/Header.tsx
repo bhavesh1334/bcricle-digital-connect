@@ -17,13 +17,18 @@ const Header = () => {
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <div className="h-10 w-10 rounded-full bg-bcircle-blue flex items-center justify-center">
+          {/* <div className="h-10 w-10 rounded-full bg-bcircle-blue flex items-center justify-center">
             <span className="text-white font-bold text-xl">B</span>
-          </div>
-          <span className="font-montserrat font-bold text-2xl text-bcircle-blue hidden sm:inline-flex">
-            <span className="text-bcircle-blue">B</span>
+          </div> */}
+          <img 
+            src="/cbn-logo.png" 
+            alt="CBN Logo" 
+            className="w-24 object-contain rounded-sm "
+          />
+          {/* <span className="font-montserrat font-bold text-2xl text-bcircle-blue hidden sm:inline-flex">
+            <span className="text-bcircle-blue">CBN</span>
             <span className="text-bcircle-orange">CIRCLE</span>
-          </span>
+          </span> */}
         </Link>
 
         {/* Search Bar - Hidden on Mobile */}

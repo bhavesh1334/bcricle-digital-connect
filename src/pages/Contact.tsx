@@ -51,7 +51,7 @@ const Contact = () => {
             Contact Us
           </h1>
           <p className="text-xl max-w-3xl mx-auto text-white/80 animate-slide-up">
-            Have questions about BCIRCLE? We're here to help you connect with Chhattisgarh's business community.
+            Have questions about CBN? We're here to help you connect with Chhattisgarh's business community.
           </p>
         </div>
       </section>
@@ -74,7 +74,7 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-lg">Visit Us</h3>
                     <p className="text-muted-foreground mt-1">
-                      BCIRCLE Office<br />
+                      CBN Office<br />
                       Civil Lines, Raipur<br />
                       Chhattisgarh 492001
                     </p>

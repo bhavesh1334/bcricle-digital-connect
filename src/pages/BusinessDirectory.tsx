@@ -391,7 +391,7 @@ const BusinessDirectory = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-bcircle-blue/5 rounded-lg border border-bcircle-blue/20 p-6 text-center">
               <h3 className="font-montserrat font-semibold text-xl mb-4 text-bcircle-blue">Own a Business?</h3>
-              <p className="text-muted-foreground mb-6">List your business on BCIRCLE and get discovered by potential customers in Raipur.</p>
+              <p className="text-muted-foreground mb-6">List your business on CBN and get discovered by potential customers in Raipur.</p>
               <Button asChild className="bg-bcircle-blue hover:bg-bcircle-blue/90">
                 <Link to="/register">List Your Business</Link>
               </Button>

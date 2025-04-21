@@ -46,7 +46,7 @@ const About = () => {
       <section className="bg-bcircle-blue text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="font-montserrat font-bold text-4xl md:text-5xl mb-6 animate-fade-in">
-            About BCIRCLE
+            About CBN
           </h1>
           <p className="text-xl max-w-3xl mx-auto mb-8 text-white/80 animate-slide-up">
             The digital backbone of Chhattisgarh's business community
@@ -86,23 +86,23 @@ const About = () => {
         </div>
       </section>
 
-      {/* The Idea Behind BCIRCLE */}
+      {/* The Idea Behind CBN */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="font-montserrat font-bold text-3xl text-center mb-12 text-bcircle-blue">
-              The Idea Behind BCIRCLE
+              The Idea Behind CBN
             </h2>
             
             <div className="space-y-8">
               <p className="text-muted-foreground">
-                BCIRCLE was born from a simple observation: while Chhattisgarh has a vibrant and diverse business community, 
+                CBN was born from a simple observation: while Chhattisgarh has a vibrant and diverse business community, 
                 many local businesses lacked the digital presence needed to thrive in today's economy. Traditional business 
                 directories were outdated, and national platforms often overlooked the unique needs of our local business ecosystem.
               </p>
               
               <p className="text-muted-foreground">
-                We created BCIRCLE to bridge this gap – providing a digital platform specifically designed for Chhattisgarh businesses, 
+                We created CBN to bridge this gap – providing a digital platform specifically designed for Chhattisgarh businesses, 
                 starting with Raipur. Our focus is on meaningful connections rather than just listings, enabling direct communication 
                 between businesses and customers through calls, WhatsApp, and email.
               </p>
@@ -168,7 +168,7 @@ const About = () => {
       <section className="py-16 bg-bcircle-blue text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-montserrat font-bold text-3xl md:text-4xl mb-6">
-            Join the BCIRCLE Community Today
+            Join the CBN Community Today
           </h2>
           
           <p className="text-lg max-w-2xl mx-auto mb-8 text-white/80">
