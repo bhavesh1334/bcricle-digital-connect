@@ -105,22 +105,22 @@ const Categories = () => {
   return (
     <MainLayout>
       {/* Categories Hero */}
-      <section className="bg-bcircle-blue text-white py-16">
+      <section className="bg-white text-[#003378] py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="font-montserrat font-bold text-4xl md:text-5xl mb-6 animate-fade-in">
             Business Categories
           </h1>
-          <p className="text-xl max-w-3xl mx-auto text-white/80 animate-slide-up">
+          <p className="text-xl max-w-3xl mx-auto text-gray-600 animate-slide-up">
             Explore businesses across Raipur by category. Find exactly what you're looking for.
           </p>
           
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mt-10 relative animate-slide-up" style={{ animationDelay: '0.3s' }}>
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white h-5 w-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#003378] h-5 w-5" />
             <Input 
               type="search" 
               placeholder="Search categories..." 
-              className="pl-10 pr-4 w-full bg-white/10 border-white/20 text-white placeholder:text-white/70 focus:border-white"
+              className="pl-10 pr-4 w-full bg-gray-50 text-[#003378] placeholder:text-gray-400 focus:border-[#003378]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -141,7 +141,7 @@ const Categories = () => {
           {filteredCategoryGroups.length > 0 ? (
             filteredCategoryGroups.map((group, groupIndex) => (
               <div key={groupIndex} className="mb-12">
-                <h2 className="font-montserrat font-semibold text-2xl mb-6 text-bcircle-blue pb-2 border-b border-bcircle-blue/20">
+                <h2 className="font-montserrat font-semibold text-2xl mb-6 text-[#003378] pb-2">
                   {group.groupName}
                 </h2>
                 
@@ -150,10 +150,10 @@ const Categories = () => {
                     <Link 
                       key={categoryIndex} 
                       to={`/categories/${category.slug}`}
-                      className="bg-white p-4 rounded-lg border border-border hover-lift flex justify-between items-center"
+                      className="bg-white p-4 rounded-xl shadow-[0_2px_12px_0_rgba(24,34,56,0.06)] flex justify-between items-center hover:shadow-[0_4px_18px_0_rgba(24,34,56,0.14)] transition-shadow"
                     >
-                      <span className="font-medium text-foreground">{category.name}</span>
-                      <span className="text-sm text-muted-foreground bg-bcircle-blue/10 px-2 py-1 rounded-full">
+                      <span className="font-medium text-[#003378]">{category.name}</span>
+                      <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                         {category.count}
                       </span>
                     </Link>
@@ -164,8 +164,8 @@ const Categories = () => {
           ) : (
             <div className="text-center py-12">
               <h2 className="text-xl font-semibold mb-4">No categories found</h2>
-              <p className="text-muted-foreground mb-6">Try adjusting your search term or browse all categories.</p>
-              <Button onClick={() => setSearchTerm('')} className="bg-bcircle-blue hover:bg-bcircle-blue/90">
+              <p className="text-gray-500 mb-6">Try adjusting your search term or browse all categories.</p>
+              <Button onClick={() => setSearchTerm('')} className="bg-[#003378] text-white hover:bg-black shadow-md">
                 Show All Categories
               </Button>
             </div>
@@ -174,20 +174,20 @@ const Categories = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 bg-bcircle-orange text-white">
+      <section className="py-12 bg-gray-100 text-[#003378]">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="font-montserrat font-bold text-2xl md:text-3xl mb-4">
               Can't Find Your Business Category?
             </h2>
-            <p className="text-white/90 mb-6">
+            <p className="text-gray-700 mb-6">
               Don't worry! We're constantly expanding our categories. Contact us to suggest a new category or register your business anyway.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild className="bg-white text-bcircle-orange hover:bg-white/90">
+              <Button asChild className="bg-white text-[#003378] border border-[#003378] shadow-md hover:bg-gray-50">
                 <Link to="/contact">Contact Us</Link>
               </Button>
-              <Button asChild variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button asChild variant="outline" className="border border-[#003378] text-[#003378] bg-white hover:bg-gray-50">
                 <Link to="/register">Register Your Business</Link>
               </Button>
             </div>

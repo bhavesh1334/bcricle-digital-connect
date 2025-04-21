@@ -6,14 +6,14 @@ import { ArrowRight } from 'lucide-react';
 
 const CTASection = () => {
   return (
-    <section className="py-16 bg-gradient-to-r from-[#3847a0] to-[#1eaedb] text-white shadow-[0_10px_45px_0_rgba(80,122,231,0.15)]">
+    <section className="py-12 bg-gray-50 text-[#003378]">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-montserrat font-bold text-3xl md:text-4xl mb-6 drop-shadow-lg">
+          <h2 className="font-montserrat font-bold text-3xl md:text-4xl mb-5">
             Ready to Join Raipur's Business Circle?
           </h2>
           
-          <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
+          <p className="text-gray-700 text-lg mb-7 max-w-2xl mx-auto">
             Register your business today and become part of Chhattisgarh's growing digital business ecosystem. Get discovered by new customers and connect with other local businesses.
           </p>
           
@@ -21,21 +21,21 @@ const CTASection = () => {
             <Button
               asChild
               size="lg"
-              className="bg-gradient-to-tr from-[#9b87f5] to-[#1eaedb] text-white hover:from-[#3847a0] hover:to-[#b8ccff] font-semibold shadow-xl"
+              className="bg-[#003378] text-white font-semibold shadow-md hover:bg-black"
             >
-              <Link to="/register">
+              <Link to="/register" className="flex items-center">
                 Register Your Business
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-none shadow bg-white/10 text-white hover:bg-white/20">
+            <Button asChild size="lg" variant="outline" className="border border-[#003378] bg-white text-[#003378] shadow-md hover:bg-gray-100">
               <Link to="/categories">
                 Explore Businesses
               </Link>
             </Button>
           </div>
           
-          <p className="mt-6 text-white/80 text-sm drop-shadow">
+          <p className="mt-6 text-gray-500 text-sm">
             Join 500+ businesses already growing with BCIRCLE
           </p>
         </div>
