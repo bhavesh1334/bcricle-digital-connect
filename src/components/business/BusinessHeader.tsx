@@ -38,70 +38,77 @@ const BusinessHeader: React.FC<BusinessHeaderProps> = ({ business }) => {
 
   return (
     <div className="relative">
-      {/* Cover Image */}
-      <div className="h-64 md:h-80 w-full overflow-hidden">
+      {/* Cover Image with Overlay */}
+      <div className="h-72 md:h-96 w-full overflow-hidden relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/20 z-10"></div>
         <img
           src={business.coverImage}
           alt={`${business.name} cover`}
           className="w-full h-full object-cover"
         />
+        
+        {/* Back Button - Positioned on top of the image */}
+        <div className="absolute top-6 left-6 z-20">
+          <Link 
+            to="/businesses" 
+            className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-md text-bcircle-blue hover:bg-white transition-all shadow-md"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-sm font-medium">Back to Directory</span>
+          </Link>
+        </div>
+        
+        {/* Verification Badge - Shown on top of the image */}
+        {business.verified && (
+          <div className="absolute top-6 right-6 z-20 flex items-center gap-1.5 bg-green-500/90 backdrop-blur-sm text-white px-3 py-1.5 rounded-md shadow-md">
+            <CheckCircle className="h-4 w-4" />
+            <span className="text-xs font-medium">Verified</span>
+          </div>
+        )}
       </div>
       
       {/* Business Header Content */}
-      <div className="container mx-auto px-4">
-        <div className="relative -mt-16 md:-mt-24 mb-8">
-          <div className="bg-white rounded-md p-6 shadow-sm">
-            <div className="flex flex-col md:flex-row md:items-center">
-              {/* Back Button */}
-              <Link to="/businesses" className="absolute top-6 left-6 flex items-center text-sm text-bcircle-blue hover:text-bcircle-orange transition-colors">
-                <ArrowLeft className="h-4 w-4 mr-1" />
-                Back to Businesses
-              </Link>
+      <div className="container mx-auto px-4 -mt-24 relative z-20">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <div className="h-24 w-24 rounded-lg overflow-hidden border-4 border-white shadow-md -mt-16 md:-mt-20 bg-white">
+                <img
+                  src={business.logo}
+                  alt={`${business.name} logo`}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </div>
+            
+            {/* Business Info */}
+            <div className="flex-grow">
+              <h1 className="text-3xl font-montserrat font-bold text-bcircle-blue">
+                {business.name}
+              </h1>
               
-              {/* Logo */}
-              <div className="flex-shrink-0 md:mr-6 mb-4 md:mb-0">
-                <div className="h-20 w-20 rounded-md overflow-hidden border border-gray-100 shadow-sm">
-                  <img
-                    src={business.logo}
-                    alt={`${business.name} logo`}
-                    className="h-full w-full object-cover"
-                  />
+              <div className="flex items-center gap-2 mt-2">
+                <span className="bg-bcircle-blue/10 text-bcircle-blue px-3 py-1 rounded-full text-sm font-medium">
+                  {business.category}
+                </span>
+                
+                <div className="flex items-center gap-1">
+                  <div className="flex">
+                    {renderStars()}
+                  </div>
+                  <span className="text-sm text-gray-600">({business.reviewCount})</span>
                 </div>
               </div>
               
-              {/* Business Info */}
-              <div className="flex-grow">
-                <div className="flex items-center mb-1">
-                  <h1 className="text-2xl font-montserrat font-semibold text-bcircle-blue mr-2">
-                    {business.name}
-                  </h1>
-                  {business.verified && (
-                    <div className="flex items-center text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                      <CheckCircle className="h-3 w-3 mr-1" />
-                      Verified
-                    </div>
-                  )}
-                </div>
-                
-                <p className="text-bcircle-orange font-medium mb-2">{business.category}</p>
-                
-                <div className="flex flex-col sm:flex-row sm:items-center text-sm text-gray-600 mb-3">
-                  <div className="flex items-center mb-2 sm:mb-0 sm:mr-4">
-                    <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                    {business.location}
-                  </div>
-                  <div className="flex items-center">
-                    <div className="flex mr-1">
-                      {renderStars()}
-                    </div>
-                    <span className="text-gray-500">{business.rating} ({business.reviewCount} reviews)</span>
-                  </div>
-                </div>
-                
-                <p className="text-sm text-gray-600 italic">
-                  {business.tagline || business.description}
-                </p>
+              <div className="flex items-center gap-1.5 mt-3 text-gray-600">
+                <MapPin className="h-4 w-4" />
+                <span className="text-sm">{business.location}</span>
               </div>
+              
+              <p className="mt-3 text-sm text-gray-600 italic max-w-2xl">
+                {business.tagline || business.description}
+              </p>
             </div>
           </div>
         </div>

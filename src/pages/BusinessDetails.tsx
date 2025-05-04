@@ -20,11 +20,11 @@ const BusinessDetails = () => {
   
   return (
     <MainLayout>
-      <div className="bg-white min-h-screen">
+      <div className="bg-gray-50 min-h-screen pb-16">
         <BusinessHeader business={business} />
         
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
               <BusinessInfo business={business} />

@@ -19,40 +19,43 @@ const BusinessGallery: React.FC<BusinessGalleryProps> = ({ images }) => {
   };
   
   return (
-    <div className="bg-white rounded-md p-6 shadow-sm">
-      <div className="flex items-center mb-4">
+    <div className="bg-white rounded-lg p-6 shadow-md">
+      <div className="flex items-center mb-6">
         <Image className="h-5 w-5 text-bcircle-blue mr-2" />
-        <h2 className="text-xl font-montserrat font-semibold">Photo Gallery</h2>
+        <h2 className="text-2xl font-montserrat font-semibold text-gray-800">Photo Gallery</h2>
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {images.map((image) => (
           <div 
             key={image.id} 
-            className="aspect-square rounded overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow"
+            className="aspect-square rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-lg transition-all duration-300 group"
             onClick={() => openLightbox(image)}
           >
-            <img 
-              src={image.imageUrl} 
-              alt={image.caption} 
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-            />
+            <div className="relative h-full w-full">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all z-10"></div>
+              <img 
+                src={image.imageUrl} 
+                alt={image.caption} 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+            </div>
           </div>
         ))}
       </div>
       
       {/* Lightbox */}
       {selectedImage && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4">
-          <div className="relative max-w-4xl w-full bg-white rounded-md shadow-xl overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="relative max-w-4xl w-full bg-white rounded-lg shadow-2xl overflow-hidden">
             <button 
-              className="absolute top-4 right-4 z-10 bg-white/80 p-2 rounded-full"
+              className="absolute top-4 right-4 z-10 bg-white/90 p-2 rounded-full shadow-md hover:bg-white transition-colors"
               onClick={closeLightbox}
             >
               <X className="h-5 w-5" />
             </button>
             
-            <div className="aspect-video w-full">
+            <div className="aspect-video w-full bg-gray-100">
               <img 
                 src={selectedImage.imageUrl} 
                 alt={selectedImage.caption} 
@@ -60,8 +63,8 @@ const BusinessGallery: React.FC<BusinessGalleryProps> = ({ images }) => {
               />
             </div>
             
-            <div className="p-4 bg-white text-center">
-              <p className="text-gray-700">{selectedImage.caption}</p>
+            <div className="p-6 bg-white">
+              <p className="text-gray-800 font-medium">{selectedImage.caption}</p>
             </div>
           </div>
         </div>

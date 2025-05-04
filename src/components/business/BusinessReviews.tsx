@@ -44,40 +44,45 @@ const BusinessReviews: React.FC<BusinessReviewsProps> = ({ reviews }) => {
   };
 
   return (
-    <div className="bg-white rounded-md p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-lg p-6 shadow-md">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
           <MessageSquare className="h-5 w-5 text-bcircle-blue mr-2" />
-          <h2 className="text-xl font-montserrat font-semibold">Reviews</h2>
+          <h2 className="text-2xl font-montserrat font-semibold text-gray-800">Customer Reviews</h2>
         </div>
-        <Button variant="outline" size="sm" className="text-bcircle-blue">Write a Review</Button>
+        <Button className="bg-bcircle-blue hover:bg-bcircle-blue/90 text-white shadow-sm">
+          Write a Review
+        </Button>
       </div>
       
       {reviews.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No reviews yet. Be the first to review!</p>
+        <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-100">
+          <p className="text-gray-500 mb-4">No reviews yet. Be the first to review!</p>
+          <Button variant="outline" className="border-bcircle-blue text-bcircle-blue hover:bg-bcircle-blue/10">
+            Add Review
+          </Button>
         </div>
       ) : (
         <div className="space-y-6">
           {reviews.map((review) => (
-            <div key={review.id} className="border-b border-gray-100 pb-6 last:border-b-0">
+            <div key={review.id} className="bg-gray-50 rounded-lg p-6 border border-gray-100">
               <div className="flex items-start">
-                <Avatar className="h-10 w-10 mr-3">
+                <Avatar className="h-12 w-12 mr-4 border-2 border-white shadow-sm">
                   <AvatarImage src={review.userImage} alt={review.userName} />
-                  <AvatarFallback>{review.userName.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-bcircle-blue text-white">{review.userName.charAt(0)}</AvatarFallback>
                 </Avatar>
                 
                 <div className="flex-grow">
-                  <div className="flex flex-wrap items-center mb-1">
-                    <h3 className="text-base font-medium mr-2">{review.userName}</h3>
-                    <span className="text-xs text-gray-500">{formatDate(review.date)}</span>
+                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-800">{review.userName}</h3>
+                    <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-md">{formatDate(review.date)}</span>
                   </div>
                   
                   <div className="flex mb-3">
                     {renderStars(review.rating)}
                   </div>
                   
-                  <p className="text-gray-700">{review.comment}</p>
+                  <p className="text-gray-700 leading-relaxed">{review.comment}</p>
                 </div>
               </div>
             </div>
@@ -87,7 +92,9 @@ const BusinessReviews: React.FC<BusinessReviewsProps> = ({ reviews }) => {
       
       {reviews.length > 3 && (
         <div className="mt-6 text-center">
-          <Button variant="outline" size="sm" className="text-bcircle-blue">View All Reviews</Button>
+          <Button variant="outline" className="border-bcircle-blue text-bcircle-blue hover:bg-bcircle-blue/10">
+            View All Reviews
+          </Button>
         </div>
       )}
     </div>
