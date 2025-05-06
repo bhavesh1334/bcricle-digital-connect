@@ -9,7 +9,133 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      business_photos: {
+        Row: {
+          business_id: string
+          created_at: string | null
+          id: string
+          photo_url: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string | null
+          id?: string
+          photo_url: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string | null
+          id?: string
+          photo_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_photos_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      businesses: {
+        Row: {
+          address: string | null
+          category: string
+          city: string
+          created_at: string | null
+          description: string
+          founded: string | null
+          id: string
+          instagram_link: string | null
+          logo_url: string | null
+          name: string
+          owner_id: string
+          pincode: string | null
+          state: string
+          updated_at: string | null
+          website: string | null
+          whatsapp: string
+        }
+        Insert: {
+          address?: string | null
+          category: string
+          city: string
+          created_at?: string | null
+          description: string
+          founded?: string | null
+          id?: string
+          instagram_link?: string | null
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          pincode?: string | null
+          state: string
+          updated_at?: string | null
+          website?: string | null
+          whatsapp: string
+        }
+        Update: {
+          address?: string | null
+          category?: string
+          city?: string
+          created_at?: string | null
+          description?: string
+          founded?: string | null
+          id?: string
+          instagram_link?: string | null
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          pincode?: string | null
+          state?: string
+          updated_at?: string | null
+          website?: string | null
+          whatsapp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "businesses_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          designation: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          designation?: string | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          designation?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
