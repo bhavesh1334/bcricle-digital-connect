@@ -54,7 +54,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
   };
 
   return (
-    <div className="bg-white border border-border rounded-lg overflow-hidden shadow-sm hover-lift card-hover">
+    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover-lift card-hover">
       <div className="relative h-48 overflow-hidden">
         <img 
           src={imageUrl} 

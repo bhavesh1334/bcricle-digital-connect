@@ -3,13 +3,54 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Menu, X } from 'lucide-react';
+import { Search, Menu, X, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { signOut } from '@/utils/auth';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Logout failed",
+        description: "Something went wrong. Please try again."
+      });
+    }
+  };
+
+  const getInitials = () => {
+    if (!user) return "?";
+    
+    const userMetadata = user.user_metadata;
+    if (userMetadata?.first_name && userMetadata?.last_name) {
+      return `${userMetadata.first_name.charAt(0)}${userMetadata.last_name.charAt(0)}`.toUpperCase();
+    } else {
+      return user.email?.charAt(0).toUpperCase() || "?";
+    }
   };
 
   return (
@@ -50,12 +91,47 @@ const Header = () => {
           <Link to="/services" className="text-foreground hover:text-bcircle-blue font-medium text-sm">Services</Link>
           <Link to="/about" className="text-foreground hover:text-bcircle-blue font-medium text-sm">About</Link>
           <Link to="/contact" className="text-foreground hover:text-bcircle-blue font-medium text-sm">Contact</Link>
-          <Button asChild variant="outline" className="ml-2 font-medium">
-            <Link to="/login">Login</Link>
-          </Button>
-          <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white">
-            <Link to="/register">Register Now</Link>
-          </Button>
+          
+          {/* Conditional rendering based on auth state */}
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="focus:outline-none">
+                <Avatar className="h-9 w-9 border-2 border-bcircle-blue">
+                  <AvatarImage src={user.user_metadata?.avatar_url} />
+                  <AvatarFallback className="bg-bcircle-blue text-white">
+                    {getInitials()}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard">Dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/settings">Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-500 cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button asChild variant="outline" className="ml-2 font-medium">
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white">
+                <Link to="/register">Register Now</Link>
+              </Button>
+            </>
+          )}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -86,14 +162,32 @@ const Header = () => {
               <Link to="/services" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Services</Link>
               <Link to="/about" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">About</Link>
               <Link to="/contact" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Contact</Link>
+              
+              {user && (
+                <>
+                  <Link to="/profile" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Profile</Link>
+                  <Link to="/dashboard" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Dashboard</Link>
+                  <Link to="/settings" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Settings</Link>
+                </>
+              )}
             </nav>
+            
             <div className="flex gap-4 mt-4">
-              <Button asChild variant="outline" className="flex-1">
-                <Link to="/login">Login</Link>
-              </Button>
-              <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white flex-1">
-                <Link to="/register">Register Now</Link>
-              </Button>
+              {user ? (
+                <Button onClick={handleLogout} variant="destructive" className="flex-1">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </Button>
+              ) : (
+                <>
+                  <Button asChild variant="outline" className="flex-1">
+                    <Link to="/login">Login</Link>
+                  </Button>
+                  <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white flex-1">
+                    <Link to="/register">Register Now</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>

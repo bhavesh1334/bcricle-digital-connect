@@ -1,11 +1,123 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { 
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+  rememberMe: z.boolean().optional().default(false)
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      rememberMe: false
+    }
+  });
+
+  const onSubmit = async (data: LoginFormValues) => {
+    setIsLoading(true);
+    
+    try {
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: error.message || "Something went wrong. Please try again."
+        });
+        return;
+      }
+
+      if (authData?.user) {
+        toast({
+          title: "Login successful",
+          description: "Welcome back!"
+        });
+        navigate('/');
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: error.message || "Something went wrong. Please try again."
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    const email = form.getValues('email');
+    
+    if (!email) {
+      toast({
+        variant: "destructive",
+        title: "Email required",
+        description: "Please enter your email address first."
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Password reset failed",
+          description: error.message
+        });
+      } else {
+        toast({
+          title: "Password reset email sent",
+          description: "Please check your email for the password reset link."
+        });
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Password reset failed",
+        description: error.message || "Something went wrong. Please try again."
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <MainLayout>
       <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center bg-gray-50 py-12 px-4">
@@ -15,69 +127,96 @@ const Login = () => {
             <p className="mt-2 text-sm text-gray-600">Sign in to access your CBN account</p>
           </div>
           
-          <form className="mt-8 space-y-6">
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  Email address
-                </label>
-                <Input
-                  id="email"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8 space-y-6">
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
                   name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="mt-1"
-                  placeholder="Enter your email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email address</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="email"
+                          autoComplete="email"
+                          required
+                          placeholder="Enter your email"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              
-              <div>
-                <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                    Password
-                  </label>
-                  <Link to="/forgot-password" className="text-sm text-bcircle-blue hover:text-bcircle-blue/80">
-                    Forgot password?
-                  </Link>
-                </div>
-                <Input
-                  id="password"
+                
+                <FormField
+                  control={form.control}
                   name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="mt-1"
-                  placeholder="Enter your password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Password</FormLabel>
+                        <button
+                          type="button"
+                          onClick={handleForgotPassword}
+                          className="text-sm text-bcircle-blue hover:text-bcircle-blue/80"
+                        >
+                          Forgot password?
+                        </button>
+                      </div>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="password"
+                          autoComplete="current-password"
+                          required
+                          placeholder="Enter your password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="rememberMe"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2 space-y-0">
+                      <input
+                        type="checkbox"
+                        id="remember-me"
+                        checked={field.value}
+                        onChange={field.onChange}
+                        className="h-4 w-4 text-bcircle-blue focus:ring-bcircle-blue border-gray-300 rounded"
+                      />
+                      <FormLabel htmlFor="remember-me" className="text-sm text-gray-700">
+                        Remember me
+                      </FormLabel>
+                    </FormItem>
+                  )}
                 />
               </div>
-              
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-bcircle-blue focus:ring-bcircle-blue border-gray-300 rounded"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                  Remember me
-                </label>
-              </div>
-            </div>
 
-            <Button type="submit" className="w-full bg-bcircle-blue hover:bg-bcircle-blue/90">
-              Sign in
-            </Button>
-            
-            <div className="text-center">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link to="/register" className="font-medium text-bcircle-orange hover:text-bcircle-orange/80">
-                  Register now
-                </Link>
-              </p>
-            </div>
-          </form>
+              <Button 
+                type="submit" 
+                className="w-full bg-bcircle-blue hover:bg-bcircle-blue/90"
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign in"}
+              </Button>
+              
+              <div className="text-center">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{' '}
+                  <Link to="/register" className="font-medium text-bcircle-orange hover:text-bcircle-orange/80">
+                    Register now
+                  </Link>
+                </p>
+              </div>
+            </form>
+          </Form>
         </div>
       </div>
     </MainLayout>
