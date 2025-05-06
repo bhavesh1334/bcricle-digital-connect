@@ -5,16 +5,140 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { 
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+import { Checkbox } from '@/components/ui/checkbox';
+
+// Step 1 schema
+const accountSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  profileImage: z.any().optional(),
+  designation: z.string().optional(),
+  phone: z.string()
+    .regex(/^[6-9]\d{9}$/, "Please enter a valid Indian phone number"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters long"),
+  confirmPassword: z.string()
+    .min(8, "Password must be at least 8 characters long"),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+// Step 2 schema
+const businessSchema = z.object({
+  businessName: z.string().min(1, "Business name is required"),
+  category: z.string().min(1, "Category is required"),
+  address: z.string().optional(),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  pincode: z.string().optional(),
+});
+
+// Step 3 schema
+const detailsSchema = z.object({
+  description: z.string().min(1, "Business description is required"),
+  instagramLink: z.string().optional(),
+  website: z.string().url("Please enter a valid URL").optional().or(z.literal('')),
+  whatsapp: z.string()
+    .regex(/^[6-9]\d{9}$/, "Please enter a valid Indian WhatsApp number"),
+  founded: z.string().optional(),
+  logo: z.any().optional(),
+  businessPhotos: z.any().optional(),
+  termsAgreed: z.boolean().refine(val => val === true, {
+    message: "You must agree to the terms and conditions",
+  }),
+});
+
+type FormData = z.infer<typeof accountSchema> & 
+                z.infer<typeof businessSchema> & 
+                z.infer<typeof detailsSchema>;
 
 const Register = () => {
   const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState<Partial<FormData>>({});
   
-  const nextStep = () => {
-    setStep(currentStep => currentStep + 1);
+  // Form for step 1
+  const form1 = useForm<z.infer<typeof accountSchema>>({
+    resolver: zodResolver(accountSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      designation: '',
+      phone: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
+  // Form for step 2
+  const form2 = useForm<z.infer<typeof businessSchema>>({
+    resolver: zodResolver(businessSchema),
+    defaultValues: {
+      businessName: '',
+      category: '',
+      address: '',
+      city: 'Raipur',
+      state: 'Chhattisgarh',
+      pincode: '',
+    },
+  });
+
+  // Form for step 3
+  const form3 = useForm<z.infer<typeof detailsSchema>>({
+    resolver: zodResolver(detailsSchema),
+    defaultValues: {
+      description: '',
+      instagramLink: '',
+      website: '',
+      whatsapp: '',
+      founded: '',
+      termsAgreed: false,
+    },
+  });
+  
+  const nextStep = async () => {
+    if (step === 1) {
+      const valid = await form1.trigger();
+      if (valid) {
+        const step1Data = form1.getValues();
+        setFormData(prev => ({ ...prev, ...step1Data }));
+        setStep(2);
+      }
+    } else if (step === 2) {
+      const valid = await form2.trigger();
+      if (valid) {
+        const step2Data = form2.getValues();
+        setFormData(prev => ({ ...prev, ...step2Data }));
+        setStep(3);
+      }
+    }
   };
   
   const prevStep = () => {
     setStep(currentStep => currentStep - 1);
+  };
+
+  const onSubmit = async () => {
+    const valid = await form3.trigger();
+    if (valid) {
+      const step3Data = form3.getValues();
+      const completeFormData = { ...formData, ...step3Data };
+      console.log('Form submitted with data:', completeFormData);
+      // Here you would integrate with your API
+    }
   };
 
   return (
@@ -59,193 +183,417 @@ const Register = () => {
             
             {/* Step 1: Account Information */}
             {step === 1 && (
-              <form className="space-y-6">
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
-                      <Input id="firstName" type="text" required className="mt-1" />
+              <Form {...form1}>
+                <form onSubmit={form1.handleSubmit(nextStep)} className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form1.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>First Name</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form1.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Last Name</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
-                    <div>
-                      <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
-                      <Input id="lastName" type="text" required className="mt-1" />
-                    </div>
+                    
+                    <FormField
+                      control={form1.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email Address</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="email" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form1.control}
+                      name="designation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Designation (Optional)</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form1.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="tel" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form1.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Create Password</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="password" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form1.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirm Password</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="password" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
-                    <Input id="email" type="email" required className="mt-1" />
+                  <div className="flex justify-end">
+                    <Button type="submit" className="bg-bcircle-blue hover:bg-bcircle-blue/90">
+                      Next Step
+                    </Button>
                   </div>
-                  
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
-                    <Input id="phone" type="tel" required className="mt-1" />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">Create Password</label>
-                    <Input id="password" type="password" required className="mt-1" />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                    <Input id="confirmPassword" type="password" required className="mt-1" />
-                  </div>
-                </div>
-                
-                <div className="flex justify-end">
-                  <Button onClick={nextStep} className="bg-bcircle-blue hover:bg-bcircle-blue/90">
-                    Next Step
-                  </Button>
-                </div>
-              </form>
+                </form>
+              </Form>
             )}
             
             {/* Step 2: Business Information */}
             {step === 2 && (
-              <form className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">Business Name</label>
-                    <Input id="businessName" type="text" required className="mt-1" />
+              <Form {...form2}>
+                <form onSubmit={form2.handleSubmit(nextStep)} className="space-y-6">
+                  <div className="space-y-4">
+                    <FormField
+                      control={form2.control}
+                      name="businessName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Business Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form2.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Business Category</FormLabel>
+                          <FormControl>
+                            <select
+                              {...field}
+                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:text-sm h-10"
+                            >
+                              <option value="">Select a category</option>
+                              <option value="web-development">Web Development & IT</option>
+                              <option value="accounting">Accounting Services</option>
+                              <option value="marketing">Digital Marketing</option>
+                              <option value="real-estate">Real Estate & Builders</option>
+                              <option value="healthcare">Healthcare Services</option>
+                              {/* More options would be added here */}
+                            </select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form2.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Business Address (Optional)</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <FormField
+                        control={form2.control}
+                        name="city"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>City</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form2.control}
+                        name="state"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>State</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form2.control}
+                        name="pincode"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Pincode (Optional)</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                   
-                  <div>
-                    <label htmlFor="category" className="block text-sm font-medium text-gray-700">Business Category</label>
-                    <select
-                      id="category"
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-bcircle-blue focus:ring-bcircle-blue sm:text-sm h-10 px-3 py-2 bg-white border"
-                    >
-                      <option value="">Select a category</option>
-                      <option value="web-development">Web Development & IT</option>
-                      <option value="accounting">Accounting Services</option>
-                      <option value="marketing">Digital Marketing</option>
-                      <option value="real-estate">Real Estate & Builders</option>
-                      <option value="healthcare">Healthcare Services</option>
-                      {/* More options would be added here */}
-                    </select>
+                  <div className="flex justify-between">
+                    <Button type="button" onClick={prevStep} variant="outline" className="border-bcircle-blue text-bcircle-blue hover:bg-bcircle-blue/10">
+                      Previous
+                    </Button>
+                    <Button type="submit" className="bg-bcircle-blue hover:bg-bcircle-blue/90">
+                      Next Step
+                    </Button>
                   </div>
-                  
-                  <div>
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700">Business Address</label>
-                    <Textarea id="address" required className="mt-1" />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
-                      <Input id="city" type="text" defaultValue="Raipur" required className="mt-1" />
-                    </div>
-                    <div>
-                      <label htmlFor="state" className="block text-sm font-medium text-gray-700">State</label>
-                      <Input id="state" type="text" defaultValue="Chhattisgarh" required className="mt-1" />
-                    </div>
-                    <div>
-                      <label htmlFor="pincode" className="block text-sm font-medium text-gray-700">Pincode</label>
-                      <Input id="pincode" type="text" required className="mt-1" />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex justify-between">
-                  <Button onClick={prevStep} variant="outline" className="border-bcircle-blue text-bcircle-blue hover:bg-bcircle-blue/10">
-                    Previous
-                  </Button>
-                  <Button onClick={nextStep} className="bg-bcircle-blue hover:bg-bcircle-blue/90">
-                    Next Step
-                  </Button>
-                </div>
-              </form>
+                </form>
+              </Form>
             )}
             
             {/* Step 3: Business Details */}
             {step === 3 && (
-              <form className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">Business Description</label>
-                    <Textarea id="description" required className="mt-1" rows={5} placeholder="Tell us about your business, services offered, etc." />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="website" className="block text-sm font-medium text-gray-700">Website (Optional)</label>
-                    <Input id="website" type="url" className="mt-1" placeholder="https://example.com" />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700">WhatsApp Business Number</label>
-                      <Input id="whatsapp" type="tel" className="mt-1" />
+              <Form {...form3}>
+                <form onSubmit={form3.handleSubmit(onSubmit)} className="space-y-6">
+                  <div className="space-y-4">
+                    <FormField
+                      control={form3.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Business Description</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} rows={5} placeholder="Tell us about your business, services offered, etc." />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form3.control}
+                      name="instagramLink"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Instagram Link (Optional)</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="https://instagram.com/yourbusiness" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form3.control}
+                      name="website"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Website (Optional)</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="url" placeholder="https://example.com" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form3.control}
+                        name="whatsapp"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>WhatsApp Business Number</FormLabel>
+                            <FormControl>
+                              <Input {...field} type="tel" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form3.control}
+                        name="founded"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Year Founded (Optional)</FormLabel>
+                            <FormControl>
+                              <Input {...field} type="number" min="1900" max={new Date().getFullYear()} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
+                    
                     <div>
-                      <label htmlFor="founded" className="block text-sm font-medium text-gray-700">Year Founded</label>
-                      <Input id="founded" type="number" className="mt-1" min="1900" max={new Date().getFullYear()} />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Business Logo (Optional)</label>
-                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                      <div className="space-y-1 text-center">
-                        <svg
-                          className="mx-auto h-12 w-12 text-gray-400"
-                          stroke="currentColor"
-                          fill="none"
-                          viewBox="0 0 48 48"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                            strokeWidth={2}
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        <div className="flex text-sm text-gray-600">
-                          <label
-                            htmlFor="file-upload"
-                            className="relative cursor-pointer bg-white rounded-md font-medium text-bcircle-blue hover:text-bcircle-blue/80"
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Business Logo (Optional)</label>
+                      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div className="space-y-1 text-center">
+                          <svg
+                            className="mx-auto h-12 w-12 text-gray-400"
+                            stroke="currentColor"
+                            fill="none"
+                            viewBox="0 0 48 48"
+                            aria-hidden="true"
                           >
-                            <span>Upload a file</span>
-                            <input id="file-upload" name="file-upload" type="file" className="sr-only" />
-                          </label>
-                          <p className="pl-1">or drag and drop</p>
+                            <path
+                              d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                              strokeWidth={2}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          <div className="flex text-sm text-gray-600">
+                            <label
+                              htmlFor="logo-upload"
+                              className="relative cursor-pointer bg-white rounded-md font-medium text-bcircle-blue hover:text-bcircle-blue/80"
+                            >
+                              <span>Upload a file</span>
+                              <input id="logo-upload" name="logo-upload" type="file" className="sr-only" />
+                            </label>
+                            <p className="pl-1">or drag and drop</p>
+                          </div>
+                          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
                         </div>
-                        <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
                       </div>
                     </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Business Photos (Optional, Max 6)</label>
+                      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div className="space-y-1 text-center">
+                          <svg
+                            className="mx-auto h-12 w-12 text-gray-400"
+                            stroke="currentColor"
+                            fill="none"
+                            viewBox="0 0 48 48"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                              strokeWidth={2}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          <div className="flex text-sm text-gray-600">
+                            <label
+                              htmlFor="photos-upload"
+                              className="relative cursor-pointer bg-white rounded-md font-medium text-bcircle-blue hover:text-bcircle-blue/80"
+                            >
+                              <span>Upload files</span>
+                              <input id="photos-upload" name="photos-upload" type="file" className="sr-only" multiple />
+                            </label>
+                            <p className="pl-1">or drag and drop</p>
+                          </div>
+                          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB each</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <FormField
+                      control={form3.control}
+                      name="termsAgreed"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                          <FormControl>
+                            <Checkbox 
+                              checked={field.value} 
+                              onCheckedChange={field.onChange}
+                              id="terms"
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel htmlFor="terms">
+                              I agree to the{' '}
+                              <Link to="/terms-of-service" className="text-bcircle-blue hover:text-bcircle-blue/80">
+                                Terms of Service
+                              </Link>{' '}
+                              and{' '}
+                              <Link to="/privacy-policy" className="text-bcircle-blue hover:text-bcircle-blue/80">
+                                Privacy Policy
+                              </Link>
+                            </FormLabel>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   
-                  <div className="flex items-center">
-                    <input
-                      id="terms"
-                      name="terms"
-                      type="checkbox"
-                      className="h-4 w-4 text-bcircle-blue focus:ring-bcircle-blue border-gray-300 rounded"
-                      required
-                    />
-                    <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-                      I agree to the{' '}
-                      <Link to="/terms-of-service" className="text-bcircle-blue hover:text-bcircle-blue/80">
-                        Terms of Service
-                      </Link>{' '}
-                      and{' '}
-                      <Link to="/privacy-policy" className="text-bcircle-blue hover:text-bcircle-blue/80">
-                        Privacy Policy
-                      </Link>
-                    </label>
+                  <div className="flex justify-between">
+                    <Button type="button" onClick={prevStep} variant="outline" className="border-bcircle-blue text-bcircle-blue hover:bg-bcircle-blue/10">
+                      Previous
+                    </Button>
+                    <Button type="submit" className="bg-bcircle-orange hover:bg-bcircle-orange/90">
+                      Complete Registration
+                    </Button>
                   </div>
-                </div>
-                
-                <div className="flex justify-between">
-                  <Button onClick={prevStep} variant="outline" className="border-bcircle-blue text-bcircle-blue hover:bg-bcircle-blue/10">
-                    Previous
-                  </Button>
-                  <Button type="submit" className="bg-bcircle-orange hover:bg-bcircle-orange/90">
-                    Complete Registration
-                  </Button>
-                </div>
-              </form>
+                </form>
+              </Form>
             )}
           </div>
           
