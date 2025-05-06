@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -17,6 +16,8 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 // Step 1 schema
 const accountSchema = z.object({
@@ -68,6 +69,9 @@ type FormData = z.infer<typeof accountSchema> &
 const Register = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<FormData>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Form for step 1
   const form1 = useForm<z.infer<typeof accountSchema>>({
@@ -136,8 +140,49 @@ const Register = () => {
     if (valid) {
       const step3Data = form3.getValues();
       const completeFormData = { ...formData, ...step3Data };
-      console.log('Form submitted with data:', completeFormData);
-      // Here you would integrate with your API
+      
+      setIsLoading(true);
+      
+      try {
+        // Sign up with Supabase
+        const { data: authData, error: signUpError } = await supabase.auth.signUp({
+          email: completeFormData.email as string,
+          password: completeFormData.password as string,
+          options: {
+            data: {
+              first_name: completeFormData.firstName,
+              last_name: completeFormData.lastName,
+              phone: completeFormData.phone,
+              designation: completeFormData.designation || ''
+            }
+          }
+        });
+
+        if (signUpError) {
+          throw new Error(signUpError.message);
+        }
+
+        if (authData?.user) {
+          // Save business data to a database table (in a future implementation)
+          // For now, we'll just log the data
+          console.log('Business registration data:', completeFormData);
+          
+          toast({
+            title: "Registration successful!",
+            description: "Your account has been created. Please check your email to verify your account."
+          });
+          
+          navigate('/');
+        }
+      } catch (error: any) {
+        toast({
+          variant: "destructive",
+          title: "Registration failed",
+          description: error.message || "Something went wrong. Please try again."
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -585,11 +630,21 @@ const Register = () => {
                   </div>
                   
                   <div className="flex justify-between">
-                    <Button type="button" onClick={prevStep} variant="outline" className="border-bcircle-blue text-bcircle-blue hover:bg-bcircle-blue/10">
+                    <Button 
+                      type="button" 
+                      onClick={prevStep} 
+                      variant="outline" 
+                      className="border-bcircle-blue text-bcircle-blue hover:bg-bcircle-blue/10"
+                      disabled={isLoading}
+                    >
                       Previous
                     </Button>
-                    <Button type="submit" className="bg-bcircle-orange hover:bg-bcircle-orange/90">
-                      Complete Registration
+                    <Button 
+                      type="submit" 
+                      className="bg-bcircle-orange hover:bg-bcircle-orange/90"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Registering..." : "Complete Registration"}
                     </Button>
                   </div>
                 </form>
