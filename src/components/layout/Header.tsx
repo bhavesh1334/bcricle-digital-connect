@@ -109,13 +109,7 @@ const Header = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/profile">Profile</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/dashboard">Dashboard</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/settings">Settings</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
+             
                 <DropdownMenuItem onClick={handleLogout} className="text-red-500 cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
@@ -124,18 +118,18 @@ const Header = () => {
             </DropdownMenu>
           ) : (
             <>
-              <Button asChild variant="outline" className="ml-2 font-medium">
+              {/* <Button asChild variant="outline" className="ml-2 font-medium">
                 <Link to="/login">Login</Link>
-              </Button>
+              </Button> */}
               <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white">
-                <Link to="/register">Register Now</Link>
+                <Link to="/login">Login</Link>
               </Button>
             </>
           )}
         </nav>
 
         {/* Mobile Menu Button */}
-        <button 
+        <button
           onClick={toggleMenu} 
           className="md:hidden p-2 text-foreground rounded-md hover:bg-muted"
           aria-label="Toggle menu"
@@ -184,7 +178,7 @@ const Header = () => {
                     <Link to="/login">Login</Link>
                   </Button>
                   <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white flex-1">
-                    <Link to="/register">Register Now</Link>
+                    <Link to="/register">Join Now</Link>
                   </Button>
                 </>
               )}

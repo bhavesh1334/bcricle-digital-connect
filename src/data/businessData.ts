@@ -76,9 +76,9 @@ export interface Business {
   location: string;
   imageUrl: string;
   coverImage: string;
-  logo: string;
+  logo?: string;
   contact: BusinessContact;
-  hours: BusinessHours;
+  hours?: BusinessHours ;
   owner: BusinessOwner;
   services: Service[];
   gallery: GalleryImage[];
@@ -105,8 +105,8 @@ export const businessData: Business[] = [
     featured: true,
     location: 'Civil Lines, Raipur',
     imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
-    coverImage: 'https://images.unsplash.com/photo-1557838923-2985c318be48',
-    logo: 'https://images.unsplash.com/photo-1617994452722-4045401c3cee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw5fHx0ZWNoJTIwbG9nb3xlbnwwfDB8fHwxNjkwMzc1NjgzfDA&ixlib=rb-4.0.3&q=80&w=1080',
+    coverImage: 'https://images.unsplash.com/photo-1557838923-2985c318be48', 
+logo:"",
     contact: {
       address: '123 Tech Park',
       city: 'Raipur',
@@ -121,15 +121,6 @@ export const businessData: Business[] = [
         linkedin: 'https://linkedin.com/company/techsphere',
         twitter: 'https://twitter.com/techsphere'
       }
-    },
-    hours: {
-      monday: '09:00 - 18:00',
-      tuesday: '09:00 - 18:00',
-      wednesday: '09:00 - 18:00',
-      thursday: '09:00 - 18:00',
-      friday: '09:00 - 18:00',
-      saturday: '10:00 - 15:00',
-      sunday: 'Closed'
     },
     owner: {
       id: 1,

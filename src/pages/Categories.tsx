@@ -174,7 +174,7 @@ const Categories = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 bg-bcircle-orange text-white">
+      {/* <section className="py-12 bg-bcircle-orange text-white">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="font-montserrat font-bold text-2xl md:text-3xl mb-4">
@@ -193,7 +193,7 @@ const Categories = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </MainLayout>
   );
 };

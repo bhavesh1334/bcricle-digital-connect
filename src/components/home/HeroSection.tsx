@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Search, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/contexts/AuthContext';
 
 const HeroSection = () => {
+  const {user}= useAuth()
   return (
     <div className="relative bg-gradient-to-br from-bcircle-blue to-bcircle-blue/90 text-white overflow-hidden">
       {/* Background Pattern */}
@@ -40,9 +42,9 @@ const HeroSection = () => {
            */}
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style={{ animationDelay: '0.6s' }}>
-            <Button asChild size="lg" className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white font-medium">
-              <Link to="/register">Register Now</Link>
-            </Button>
+          { !user &&   <Button asChild size="lg" className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white font-medium">
+              <Link to="/register">Join Now</Link>
+            </Button>}
             <Button asChild size="lg" variant="outline" className="border-white text-white bg-white/5 hover:bg-white/10">
               <Link to="/categories">
                 Explore Raipur's Business Circle

@@ -30,7 +30,7 @@ const BusinessDetails = () => {
               <BusinessInfo business={business} />
               <BusinessGallery images={business.gallery} />
               <BusinessServices services={business.services} />
-              <BusinessReviews reviews={business.reviews} />
+              {/* <BusinessReviews reviews={business.reviews} /> */}
             </div>
             
             {/* Sidebar */}
