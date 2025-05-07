@@ -37,8 +37,9 @@ export const detailsSchema = z.object({
   whatsapp: z.string()
     .regex(/^[6-9]\d{9}$/, "Please enter a valid Indian WhatsApp number"),
   founded: z.string().optional(),
-  logo: z.any().optional(),
-  businessPhotos: z.any().optional(),
+  logo: z.instanceof(File).optional().or(z.any()),
+  coverImage: z.instanceof(File).optional().or(z.any()),
+  businessPhotos: z.array(z.instanceof(File)).optional().or(z.any()),
   termsAgreed: z.boolean().refine(val => val === true, {
     message: "You must agree to the terms and conditions",
   }),

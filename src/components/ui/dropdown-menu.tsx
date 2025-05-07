@@ -180,6 +180,42 @@ const DropdownMenuShortcut = ({
 }
 DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
 
+// New component for avatar/trigger with user info
+interface DropdownMenuUserTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  name: string;
+  email: string;
+  avatarSrc?: string;
+}
+
+const DropdownMenuUserTrigger = React.forwardRef<
+  HTMLButtonElement,
+  DropdownMenuUserTriggerProps
+>(({ name, email, avatarSrc, className, ...props }, ref) => (
+  <button
+    ref={ref}
+    className={cn(
+      "flex items-center space-x-2 rounded-full outline-none focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2",
+      className
+    )}
+    {...props}
+  >
+    <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center overflow-hidden rounded-full bg-slate-100">
+      {avatarSrc ? (
+        <img src={avatarSrc} alt={name} className="h-full w-full object-cover" />
+      ) : (
+        <span className="text-sm font-medium uppercase text-slate-500">
+          {name.charAt(0)}
+        </span>
+      )}
+    </div>
+    <div className="flex flex-col items-start text-left">
+      <p className="text-sm font-medium">{name}</p>
+      <p className="text-xs text-slate-500 truncate max-w-[150px]">{email}</p>
+    </div>
+  </button>
+))
+DropdownMenuUserTrigger.displayName = "DropdownMenuUserTrigger"
+
 export {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -196,4 +232,5 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
+  DropdownMenuUserTrigger,
 }

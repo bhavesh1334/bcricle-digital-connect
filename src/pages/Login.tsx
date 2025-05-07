@@ -7,7 +7,7 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Form,
@@ -19,15 +19,15 @@ import {
 } from '@/components/ui/form';
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
-  rememberMe: z.boolean().optional().default(false)
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -36,7 +36,6 @@ const Login = () => {
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false
     }
   });
 
@@ -44,74 +43,23 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      const { data: authData, error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password
-      });
+      const { error } = await signIn(data.email, data.password);
 
       if (error) {
-        toast({
-          variant: "destructive",
-          title: "Login failed",
-          description: error.message || "Something went wrong. Please try again."
-        });
-        return;
+        throw new Error(error.message);
       }
 
-      if (authData?.user) {
-        toast({
-          title: "Login successful",
-          description: "Welcome back!"
-        });
-        navigate('/');
-      }
+      toast({
+        title: "Login successful!",
+        description: "Welcome back to Business Circle."
+      });
+      
+      navigate('/');
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Login failed",
-        description: error.message || "Something went wrong. Please try again."
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleForgotPassword = async () => {
-    const email = form.getValues('email');
-    
-    if (!email) {
-      toast({
-        variant: "destructive",
-        title: "Email required",
-        description: "Please enter your email address first."
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Password reset failed",
-          description: error.message
-        });
-      } else {
-        toast({
-          title: "Password reset email sent",
-          description: "Please check your email for the password reset link."
-        });
-      }
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Password reset failed",
-        description: error.message || "Something went wrong. Please try again."
+        description: error.message || "Invalid email or password. Please try again."
       });
     } finally {
       setIsLoading(false);
@@ -140,7 +88,6 @@ const Login = () => {
                         <Input
                           {...field}
                           type="email"
-                          autoComplete="email"
                           required
                           placeholder="Enter your email"
                         />
@@ -157,43 +104,22 @@ const Login = () => {
                     <FormItem>
                       <div className="flex items-center justify-between">
                         <FormLabel>Password</FormLabel>
-                        <button
-                          type="button"
-                          onClick={handleForgotPassword}
-                          className="text-sm text-bcircle-blue hover:text-bcircle-blue/80"
+                        <Link
+                          to="/forgot-password"
+                          className="text-sm font-medium text-bcircle-blue hover:text-bcircle-blue/80"
                         >
-                          Forgot password?
-                        </button>
+                          Forgot Password?
+                        </Link>
                       </div>
                       <FormControl>
                         <Input
                           {...field}
                           type="password"
-                          autoComplete="current-password"
                           required
                           placeholder="Enter your password"
                         />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="rememberMe"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <input
-                        type="checkbox"
-                        id="remember-me"
-                        checked={field.value}
-                        onChange={field.onChange}
-                        className="h-4 w-4 text-bcircle-blue focus:ring-bcircle-blue border-gray-300 rounded"
-                      />
-                      <FormLabel htmlFor="remember-me" className="text-sm text-gray-700">
-                        Remember me
-                      </FormLabel>
                     </FormItem>
                   )}
                 />
@@ -210,7 +136,7 @@ const Login = () => {
               <div className="text-center">
                 <p className="text-sm text-gray-600">
                   Don't have an account?{' '}
-                  <Link to="/register" className="font-medium text-bcircle-orange hover:text-bcircle-orange/80">
+                  <Link to="/register" className="font-medium text-bcircle-blue hover:text-bcircle-blue/80">
                     Register now
                   </Link>
                 </p>

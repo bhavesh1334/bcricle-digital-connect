@@ -58,6 +58,9 @@ export const useRegisterForm = () => {
       website: '',
       whatsapp: '',
       founded: '',
+      logo: undefined,
+      coverImage: undefined,
+      businessPhotos: [],
       termsAgreed: false,
     },
   });
@@ -82,6 +85,27 @@ export const useRegisterForm = () => {
 
   const prevStep = () => {
     setStep(currentStep => currentStep - 1);
+  };
+
+  // Upload a file to Supabase Storage
+  const uploadFile = async (file: File, bucket: string, path: string) => {
+    if (!file) return null;
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+    const filePath = `${path}/${fileName}`;
+    
+    const { error: uploadError, data } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file);
+    
+    if (uploadError) {
+      console.error('Error uploading file:', uploadError);
+      return null;
+    }
+    
+    const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(filePath);
+    return publicUrl;
   };
 
   const onSubmit = async () => {
@@ -112,16 +136,71 @@ export const useRegisterForm = () => {
         }
 
         if (authData?.user) {
-          // Save business data to a database table (in a future implementation)
-          // For now, we'll just log the data
-          console.log('Business registration data:', completeFormData);
+          // Upload logo if provided
+          let logoUrl = null;
+          if (completeFormData.logo instanceof File) {
+            logoUrl = await uploadFile(completeFormData.logo, 'business-images', 'logos');
+          }
           
+          // Upload cover image if provided
+          let coverImageUrl = null;
+          if (completeFormData.coverImage instanceof File) {
+            coverImageUrl = await uploadFile(completeFormData.coverImage, 'business-images', 'covers');
+          }
+
+          // Now insert business data
+          const { data: businessData, error: businessError } = await supabase
+            .from('businesses')
+            .insert({
+              owner_id: authData.user.id,
+              name: completeFormData.businessName as string,
+              description: completeFormData.description as string,
+              category: completeFormData.category as string,
+              address: completeFormData.address || null,
+              city: completeFormData.city as string,
+              state: completeFormData.state as string,
+              pincode: completeFormData.pincode || null,
+              website: completeFormData.website || null,
+              instagram_link: completeFormData.instagramLink || null,
+              whatsapp: completeFormData.whatsapp as string,
+              founded: completeFormData.founded || null,
+              logo_url: logoUrl,
+              cover_image: coverImageUrl,
+              verified: false,
+              payment_status: 'pending'
+            })
+            .select('id')
+            .single();
+
+          if (businessError) {
+            throw new Error(businessError.message);
+          }
+          
+          // Upload business photos if provided
+          if (Array.isArray(completeFormData.businessPhotos) && completeFormData.businessPhotos.length > 0 && businessData) {
+            const photoPromises = completeFormData.businessPhotos.map(async (photo: File) => {
+              const photoUrl = await uploadFile(photo, 'business-images', 'photos');
+              if (photoUrl) {
+                return supabase
+                  .from('business_photos')
+                  .insert({
+                    business_id: businessData.id,
+                    photo_url: photoUrl
+                  });
+              }
+              return null;
+            });
+            
+            await Promise.all(photoPromises);
+          }
+          
+          // For now, display registration success and verification message
           toast({
             title: "Registration successful!",
-            description: "Your account has been created. Please check your email to verify your account."
+            description: "Please check your email to verify your account."
           });
           
-          navigate('/');
+          navigate('/registration-success');
         }
       } catch (error: any) {
         toast({
