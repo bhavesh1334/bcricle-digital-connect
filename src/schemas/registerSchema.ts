@@ -38,6 +38,7 @@ export const detailsSchema = z.object({
     .regex(/^[6-9]\d{9}$/, "Please enter a valid Indian WhatsApp number"),
   founded: z.string().optional(),
   logo: z.any().optional(),
+  coverImage: z.any().optional(), // Added new field for cover image
   businessPhotos: z.any().optional(),
   termsAgreed: z.boolean().refine(val => val === true, {
     message: "You must agree to the terms and conditions",

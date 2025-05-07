@@ -14,6 +14,8 @@ import BusinessDetails from "./pages/BusinessDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
+import RegistrationSuccess from "./pages/RegistrationSuccess";
 import NotFound from "./pages/NotFound";
 import AuthGuard from "./components/auth/AuthGuard";
 
@@ -34,6 +36,8 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/registration-success" element={<RegistrationSuccess />} />
             
             {/* Protected Routes (require authentication) */}
             <Route path="/categories" element={<AuthGuard><Categories /></AuthGuard>} />

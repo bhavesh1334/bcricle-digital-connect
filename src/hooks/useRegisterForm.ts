@@ -112,16 +112,39 @@ export const useRegisterForm = () => {
         }
 
         if (authData?.user) {
-          // Save business data to a database table (in a future implementation)
-          // For now, we'll just log the data
-          console.log('Business registration data:', completeFormData);
+          // Now insert business data
+          const { error: businessError } = await supabase
+            .from('businesses')
+            .insert({
+              owner_id: authData.user.id,
+              name: completeFormData.businessName as string,
+              description: completeFormData.description as string,
+              category: completeFormData.category as string,
+              address: completeFormData.address || null,
+              city: completeFormData.city as string,
+              state: completeFormData.state as string,
+              pincode: completeFormData.pincode || null,
+              website: completeFormData.website || null,
+              instagram_link: completeFormData.instagramLink || null,
+              whatsapp: completeFormData.whatsapp as string,
+              founded: completeFormData.founded || null,
+              logo_url: null, // We'll handle file uploads separately
+              cover_image: null, // New field for cover image
+              verified: false, // Default value for new field
+              payment_status: 'pending' // Default value for new field
+            });
+
+          if (businessError) {
+            throw new Error(businessError.message);
+          }
           
+          // For now, display registration success and verification message
           toast({
             title: "Registration successful!",
-            description: "Your account has been created. Please check your email to verify your account."
+            description: "Please check your email to verify your account."
           });
           
-          navigate('/');
+          navigate('/registration-success');
         }
       } catch (error: any) {
         toast({
