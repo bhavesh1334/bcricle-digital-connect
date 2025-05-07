@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Link } from 'react-router-dom';
+import { X, Upload } from 'lucide-react';
 import { 
   Form,
   FormControl,
@@ -24,6 +25,86 @@ interface DetailsFormProps {
 }
 
 const DetailsForm: React.FC<DetailsFormProps> = ({ form, onSubmit, onPrev, isLoading }) => {
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+
+  // Handle logo upload
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      form.setValue('logo', file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle cover image upload
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      form.setValue('coverImage', file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle business photos upload
+  const handlePhotosUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files?.length) {
+      const newPhotos = Array.from(files);
+      const currentPhotos = form.getValues('businessPhotos') || [];
+      
+      // Limit to 6 photos total
+      const combinedPhotos = [...currentPhotos, ...newPhotos].slice(0, 6);
+      form.setValue('businessPhotos', combinedPhotos);
+      
+      // Generate previews for all photos
+      const newPreviews: string[] = [];
+      combinedPhotos.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          newPreviews.push(reader.result as string);
+          if (newPreviews.length === combinedPhotos.length) {
+            setPhotoPreviews(newPreviews);
+          }
+        };
+        reader.readAsDataURL(file as File);
+      });
+    }
+  };
+
+  // Remove a photo from the selection
+  const removePhoto = (index: number) => {
+    const currentPhotos = form.getValues('businessPhotos') || [];
+    const updatedPhotos = [...currentPhotos];
+    updatedPhotos.splice(index, 1);
+    form.setValue('businessPhotos', updatedPhotos);
+    
+    const updatedPreviews = [...photoPreviews];
+    updatedPreviews.splice(index, 1);
+    setPhotoPreviews(updatedPreviews);
+  };
+
+  // Remove logo
+  const removeLogo = () => {
+    form.setValue('logo', undefined);
+    setLogoPreview(null);
+  };
+
+  // Remove cover image
+  const removeCover = () => {
+    form.setValue('coverImage', undefined);
+    setCoverPreview(null);
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -100,103 +181,171 @@ const DetailsForm: React.FC<DetailsFormProps> = ({ form, onSubmit, onPrev, isLoa
             />
           </div>
           
+          {/* Logo Upload with Preview */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Business Logo (Optional)</label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-              <div className="space-y-1 text-center">
-                <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
-                  stroke="currentColor"
-                  fill="none"
-                  viewBox="0 0 48 48"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <div className="flex text-sm text-gray-600">
-                  <label
-                    htmlFor="logo-upload"
-                    className="relative cursor-pointer bg-white rounded-md font-medium text-bcircle-blue hover:text-bcircle-blue/80"
+            <FormLabel className="block text-sm font-medium text-gray-700 mb-2">Business Logo (Optional)</FormLabel>
+            <div className="mt-1 flex flex-col space-y-4">
+              {logoPreview ? (
+                <div className="relative w-40 h-40 border rounded-md overflow-hidden">
+                  <img src={logoPreview} alt="Logo preview" className="w-full h-full object-cover" />
+                  <Button 
+                    type="button" 
+                    variant="destructive" 
+                    size="icon" 
+                    className="absolute top-2 right-2 h-6 w-6" 
+                    onClick={removeLogo}
                   >
-                    <span>Upload a file</span>
-                    <input id="logo-upload" name="logo-upload" type="file" className="sr-only" />
-                  </label>
-                  <p className="pl-1">or drag and drop</p>
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
-                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
-              </div>
+              ) : (
+                <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                  <div className="space-y-1 text-center">
+                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="logo-upload"
+                        className="relative cursor-pointer bg-white rounded-md font-medium text-bcircle-blue hover:text-bcircle-blue/80"
+                      >
+                        <span>Upload a file</span>
+                        <input 
+                          id="logo-upload" 
+                          name="logo-upload" 
+                          type="file" 
+                          className="sr-only"
+                          accept="image/*"
+                          onChange={handleLogoUpload} 
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
-          {/* New Cover Image Upload */}
+          {/* Cover Image Upload with Preview */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Business Cover Image (Optional)</label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-              <div className="space-y-1 text-center">
-                <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
-                  stroke="currentColor"
-                  fill="none"
-                  viewBox="0 0 48 48"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <div className="flex text-sm text-gray-600">
-                  <label
-                    htmlFor="cover-upload"
-                    className="relative cursor-pointer bg-white rounded-md font-medium text-bcircle-blue hover:text-bcircle-blue/80"
+            <FormLabel className="block text-sm font-medium text-gray-700 mb-2">Business Cover Image (Optional)</FormLabel>
+            <div className="mt-1 flex flex-col space-y-4">
+              {coverPreview ? (
+                <div className="relative w-full h-40 border rounded-md overflow-hidden">
+                  <img src={coverPreview} alt="Cover preview" className="w-full h-full object-cover" />
+                  <Button 
+                    type="button" 
+                    variant="destructive" 
+                    size="icon" 
+                    className="absolute top-2 right-2 h-6 w-6" 
+                    onClick={removeCover}
                   >
-                    <span>Upload a file</span>
-                    <input id="cover-upload" name="cover-upload" type="file" className="sr-only" />
-                  </label>
-                  <p className="pl-1">or drag and drop</p>
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
-                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
-              </div>
+              ) : (
+                <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                  <div className="space-y-1 text-center">
+                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="cover-upload"
+                        className="relative cursor-pointer bg-white rounded-md font-medium text-bcircle-blue hover:text-bcircle-blue/80"
+                      >
+                        <span>Upload a file</span>
+                        <input 
+                          id="cover-upload" 
+                          name="cover-upload" 
+                          type="file" 
+                          className="sr-only"
+                          accept="image/*"
+                          onChange={handleCoverUpload} 
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
+          {/* Business Photos Upload with Preview */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Business Photos (Optional, Max 6)</label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-              <div className="space-y-1 text-center">
-                <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
-                  stroke="currentColor"
-                  fill="none"
-                  viewBox="0 0 48 48"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <div className="flex text-sm text-gray-600">
-                  <label
-                    htmlFor="photos-upload"
-                    className="relative cursor-pointer bg-white rounded-md font-medium text-bcircle-blue hover:text-bcircle-blue/80"
-                  >
-                    <span>Upload files</span>
-                    <input id="photos-upload" name="photos-upload" type="file" className="sr-only" multiple />
-                  </label>
-                  <p className="pl-1">or drag and drop</p>
+            <FormLabel className="block text-sm font-medium text-gray-700 mb-2">
+              Business Photos (Optional, Max 6)
+              {photoPreviews.length > 0 && 
+                <span className="ml-2 text-xs text-gray-500">
+                  {photoPreviews.length}/6 uploaded
+                </span>
+              }
+            </FormLabel>
+            <div className="mt-1 space-y-4">
+              {photoPreviews.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {photoPreviews.map((preview, index) => (
+                    <div key={index} className="relative h-40 border rounded-md overflow-hidden">
+                      <img src={preview} alt={`Business photo ${index + 1}`} className="w-full h-full object-cover" />
+                      <Button 
+                        type="button" 
+                        variant="destructive" 
+                        size="icon" 
+                        className="absolute top-2 right-2 h-6 w-6" 
+                        onClick={() => removePhoto(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  {photoPreviews.length < 6 && (
+                    <div className="h-40 flex items-center justify-center border-2 border-gray-300 border-dashed rounded-md">
+                      <label
+                        htmlFor="photos-upload"
+                        className="cursor-pointer flex flex-col items-center space-y-2"
+                      >
+                        <Upload className="h-8 w-8 text-gray-400" />
+                        <span className="text-sm text-gray-500">Add more</span>
+                        <input 
+                          id="photos-upload" 
+                          name="photos-upload" 
+                          type="file" 
+                          className="sr-only" 
+                          accept="image/*"
+                          multiple 
+                          onChange={handlePhotosUpload}
+                        />
+                      </label>
+                    </div>
+                  )}
                 </div>
-                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB each</p>
-              </div>
+              ) : (
+                <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                  <div className="space-y-1 text-center">
+                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="photos-upload"
+                        className="relative cursor-pointer bg-white rounded-md font-medium text-bcircle-blue hover:text-bcircle-blue/80"
+                      >
+                        <span>Upload files</span>
+                        <input 
+                          id="photos-upload" 
+                          name="photos-upload" 
+                          type="file" 
+                          className="sr-only" 
+                          accept="image/*"
+                          multiple 
+                          onChange={handlePhotosUpload}
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB each</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           

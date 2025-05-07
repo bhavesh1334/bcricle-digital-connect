@@ -43,6 +43,7 @@ export type Database = {
           address: string | null
           category: string
           city: string
+          cover_image: string | null
           created_at: string | null
           description: string
           founded: string | null
@@ -51,9 +52,11 @@ export type Database = {
           logo_url: string | null
           name: string
           owner_id: string
+          payment_status: string | null
           pincode: string | null
           state: string
           updated_at: string | null
+          verified: boolean | null
           website: string | null
           whatsapp: string
         }
@@ -61,6 +64,7 @@ export type Database = {
           address?: string | null
           category: string
           city: string
+          cover_image?: string | null
           created_at?: string | null
           description: string
           founded?: string | null
@@ -69,9 +73,11 @@ export type Database = {
           logo_url?: string | null
           name: string
           owner_id: string
+          payment_status?: string | null
           pincode?: string | null
           state: string
           updated_at?: string | null
+          verified?: boolean | null
           website?: string | null
           whatsapp: string
         }
@@ -79,6 +85,7 @@ export type Database = {
           address?: string | null
           category?: string
           city?: string
+          cover_image?: string | null
           created_at?: string | null
           description?: string
           founded?: string | null
@@ -87,9 +94,11 @@ export type Database = {
           logo_url?: string | null
           name?: string
           owner_id?: string
+          payment_status?: string | null
           pincode?: string | null
           state?: string
           updated_at?: string | null
+          verified?: boolean | null
           website?: string | null
           whatsapp?: string
         }
