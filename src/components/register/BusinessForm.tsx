@@ -123,10 +123,10 @@ const BusinessForm: React.FC<BusinessFormProps> = ({ form, onNext, onPrev }) => 
           </div>
         </div>
         
-        <div className="flex justify-between">
-          <Button type="button" onClick={onPrev} variant="outline" className="border-bcircle-blue text-bcircle-blue hover:bg-bcircle-blue/10">
+        <div className="flex justify-end">
+          {/* <Button type="button" onClick={onPrev} variant="outline" className="border-bcircle-blue text-bcircle-blue hover:bg-bcircle-blue/10">
             Previous
-          </Button>
+          </Button> */}
           <Button type="submit" className="bg-bcircle-blue hover:bg-bcircle-blue/90">
             Next Step
           </Button>
