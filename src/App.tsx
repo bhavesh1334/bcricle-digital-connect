@@ -18,6 +18,9 @@ import ForgotPassword from "./pages/ForgotPassword";
 import RegistrationSuccess from "./pages/RegistrationSuccess";
 import NotFound from "./pages/NotFound";
 import AuthGuard from "./components/auth/AuthGuard";
+import VerifyEmail from "./app/VerifyEmail";
+import CompleteRegistration from "./app/CompleteRegistration";
+import AuthRoute from "./components/AuthRoute";
 
 const queryClient = new QueryClient();
 
@@ -38,9 +41,11 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/registration-success" element={<RegistrationSuccess />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             
             {/* Protected Routes (require authentication) */}
             <Route path="/categories" element={<AuthGuard><Categories /></AuthGuard>} />
+            <Route path="/complete-registration" element={<AuthRoute><CompleteRegistration /></AuthRoute>} />
             <Route path="/businesses" element={<AuthGuard><BusinessDirectory /></AuthGuard>} />
             <Route path="/business/:slug" element={<AuthGuard><BusinessDetails /></AuthGuard>} />
             
