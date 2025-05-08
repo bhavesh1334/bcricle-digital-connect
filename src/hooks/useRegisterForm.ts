@@ -117,7 +117,10 @@ export const useRegisterForm = () => {
       setIsLoading(true);
       
       try {
+        console.log("Starting registration process...");
+        
         // 1. Sign up with Supabase
+        console.log("Attempting to sign up user with email:", completeFormData.email);
         const { data: authData, error: signUpError } = await supabase.auth.signUp({
           email: completeFormData.email as string,
           password: completeFormData.password as string,
@@ -141,27 +144,42 @@ export const useRegisterForm = () => {
 
         console.log("Successfully created user:", authData.user.id);
         
-        // 2. Sign in immediately to get a valid session
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email: completeFormData.email as string,
-          password: completeFormData.password as string
-        });
+        // Important: Wait for the session to be established before proceeding
+        console.log("Getting current session...");
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
-        if (signInError) {
-          console.error("Sign in error:", signInError);
-          throw new Error(signInError.message);
+        if (sessionError || !sessionData.session) {
+          console.error("Failed to get session after signup:", sessionError);
+          
+          // Force sign in to get a valid session
+          console.log("Attempting to sign in to establish session...");
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email: completeFormData.email as string,
+            password: completeFormData.password as string
+          });
+          
+          if (signInError || !signInData.session) {
+            console.error("Sign in error after signup:", signInError);
+            throw new Error(signInError?.message || "Failed to establish session");
+          }
+          
+          console.log("Sign-in successful, session established:", signInData.session.access_token.substring(0, 10) + "...");
+        } else {
+          console.log("Session already established:", sessionData.session.access_token.substring(0, 10) + "...");
         }
         
-        if (!signInData?.session) {
-          console.error("No session after sign in");
-          throw new Error("Failed to establish session");
+        // Verify we have a valid session before proceeding
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          throw new Error("No valid session established. Please try again.");
         }
-
-        console.log("Successfully signed in with session:", signInData.session.access_token.substring(0, 10) + "...");
+        
+        console.log("Proceeding with authenticated session to upload files and create business...");
         
         // 3. Upload logo if provided
         let logoUrl = null;
         if (completeFormData.logo instanceof File) {
+          console.log("Uploading business logo...");
           logoUrl = await uploadFile(completeFormData.logo, 'business-images', 'logos');
           console.log("Logo uploaded:", logoUrl);
         }
@@ -169,55 +187,72 @@ export const useRegisterForm = () => {
         // 4. Upload cover image if provided
         let coverImageUrl = null;
         if (completeFormData.coverImage instanceof File) {
+          console.log("Uploading cover image...");
           coverImageUrl = await uploadFile(completeFormData.coverImage, 'business-images', 'covers');
           console.log("Cover image uploaded:", coverImageUrl);
         }
 
         // 5. Now insert business data with the active session
-        const { data: businessData, error: businessError } = await supabase
+        console.log("Inserting business data with owner_id:", authData.user.id);
+        console.log("Session user ID for insertion:", session.user.id);
+        
+        const businessData = {
+          owner_id: authData.user.id,
+          name: completeFormData.businessName as string,
+          description: completeFormData.description as string,
+          category: completeFormData.category as string,
+          address: completeFormData.address || null,
+          city: completeFormData.city as string,
+          state: completeFormData.state as string,
+          pincode: completeFormData.pincode || null,
+          website: completeFormData.website || null,
+          instagram_link: completeFormData.instagramLink || null,
+          whatsapp: completeFormData.whatsapp as string,
+          founded: completeFormData.founded || null,
+          logo_url: logoUrl,
+          cover_image: coverImageUrl,
+          verified: false,
+          payment_status: 'pending'
+        };
+        
+        console.log("Business data for insertion:", businessData);
+        
+        const { data: insertedBusiness, error: businessError } = await supabase
           .from('businesses')
-          .insert({
-            owner_id: authData.user.id,
-            name: completeFormData.businessName as string,
-            description: completeFormData.description as string,
-            category: completeFormData.category as string,
-            address: completeFormData.address || null,
-            city: completeFormData.city as string,
-            state: completeFormData.state as string,
-            pincode: completeFormData.pincode || null,
-            website: completeFormData.website || null,
-            instagram_link: completeFormData.instagramLink || null,
-            whatsapp: completeFormData.whatsapp as string,
-            founded: completeFormData.founded || null,
-            logo_url: logoUrl,
-            cover_image: coverImageUrl,
-            verified: false,
-            payment_status: 'pending'
-          })
+          .insert(businessData)
           .select('id')
           .single();
 
         if (businessError) {
-          console.error('Business insertion error:', businessError);
-          console.error('Current auth status:', await supabase.auth.getSession());
-          throw new Error(businessError.message);
+          console.error('Business insertion error details:', businessError);
+          
+          // Try to get more info about the error
+          console.error('Error code:', businessError.code);
+          console.error('Error message:', businessError.message);
+          console.error('Error details:', businessError.details);
+          
+          // Check session status
+          const sessionStatus = await supabase.auth.getSession();
+          console.error('Current session status:', sessionStatus.data.session ? 'Active' : 'No session');
+          
+          throw new Error(`Business insertion failed: ${businessError.message}`);
         }
         
-        console.log("Successfully created business with ID:", businessData?.id);
+        console.log("Successfully created business with ID:", insertedBusiness?.id);
         
         // 6. Upload business photos if provided
-        if (Array.isArray(completeFormData.businessPhotos) && completeFormData.businessPhotos.length > 0 && businessData) {
+        if (Array.isArray(completeFormData.businessPhotos) && completeFormData.businessPhotos.length > 0 && insertedBusiness) {
           console.log(`Uploading ${completeFormData.businessPhotos.length} business photos`);
           
           const photoPromises = completeFormData.businessPhotos.map(async (photo: File, index: number) => {
-            const photoUrl = await uploadFile(photo, 'business-images', `photos/${businessData.id}`);
+            const photoUrl = await uploadFile(photo, 'business-images', `photos/${insertedBusiness.id}`);
             console.log(`Photo ${index + 1} uploaded:`, photoUrl);
             
             if (photoUrl) {
               const { error: photoError } = await supabase
                 .from('business_photos')
                 .insert({
-                  business_id: businessData.id,
+                  business_id: insertedBusiness.id,
                   photo_url: photoUrl
                 });
                 
