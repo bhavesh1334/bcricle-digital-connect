@@ -88,7 +88,7 @@ export const useRegisterForm = () => {
   };
 
   // Upload a file to Supabase Storage
-  const uploadFile = async (file: File, bucket: string, path: string, authData: any) => {
+  const uploadFile = async (file: File, bucket: string, path: string) => {
     if (!file) return null;
     
     const fileExt = file.name.split('.').pop();
@@ -117,7 +117,7 @@ export const useRegisterForm = () => {
       setIsLoading(true);
       
       try {
-        // Sign up with Supabase
+        // 1. Sign up with Supabase
         const { data: authData, error: signUpError } = await supabase.auth.signUp({
           email: completeFormData.email as string,
           password: completeFormData.password as string,
@@ -138,30 +138,42 @@ export const useRegisterForm = () => {
         if (!authData?.user) {
           throw new Error("User registration failed");
         }
+
+        console.log("Successfully created user:", authData.user.id);
         
-        // First, sign in with the newly created credentials to get a valid session
+        // 2. Sign in immediately to get a valid session
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email: completeFormData.email as string,
           password: completeFormData.password as string
         });
         
         if (signInError) {
+          console.error("Sign in error:", signInError);
           throw new Error(signInError.message);
         }
         
-        // Upload logo if provided
-        let logoUrl = null;
-        if (completeFormData.logo instanceof File) {
-          logoUrl = await uploadFile(completeFormData.logo, 'business-images', 'logos', authData);
-        }
-        
-        // Upload cover image if provided
-        let coverImageUrl = null;
-        if (completeFormData.coverImage instanceof File) {
-          coverImageUrl = await uploadFile(completeFormData.coverImage, 'business-images', 'covers', authData);
+        if (!signInData?.session) {
+          console.error("No session after sign in");
+          throw new Error("Failed to establish session");
         }
 
-        // Now insert business data with the active session
+        console.log("Successfully signed in with session:", signInData.session.access_token.substring(0, 10) + "...");
+        
+        // 3. Upload logo if provided
+        let logoUrl = null;
+        if (completeFormData.logo instanceof File) {
+          logoUrl = await uploadFile(completeFormData.logo, 'business-images', 'logos');
+          console.log("Logo uploaded:", logoUrl);
+        }
+        
+        // 4. Upload cover image if provided
+        let coverImageUrl = null;
+        if (completeFormData.coverImage instanceof File) {
+          coverImageUrl = await uploadFile(completeFormData.coverImage, 'business-images', 'covers');
+          console.log("Cover image uploaded:", coverImageUrl);
+        }
+
+        // 5. Now insert business data with the active session
         const { data: businessData, error: businessError } = await supabase
           .from('businesses')
           .insert({
@@ -186,29 +198,43 @@ export const useRegisterForm = () => {
           .single();
 
         if (businessError) {
-          console.error('Business error:', businessError);
+          console.error('Business insertion error:', businessError);
+          console.error('Current auth status:', await supabase.auth.getSession());
           throw new Error(businessError.message);
         }
         
-        // Upload business photos if provided
+        console.log("Successfully created business with ID:", businessData?.id);
+        
+        // 6. Upload business photos if provided
         if (Array.isArray(completeFormData.businessPhotos) && completeFormData.businessPhotos.length > 0 && businessData) {
-          const photoPromises = completeFormData.businessPhotos.map(async (photo: File) => {
-            const photoUrl = await uploadFile(photo, 'business-images', 'photos', authData);
+          console.log(`Uploading ${completeFormData.businessPhotos.length} business photos`);
+          
+          const photoPromises = completeFormData.businessPhotos.map(async (photo: File, index: number) => {
+            const photoUrl = await uploadFile(photo, 'business-images', `photos/${businessData.id}`);
+            console.log(`Photo ${index + 1} uploaded:`, photoUrl);
+            
             if (photoUrl) {
-              return supabase
+              const { error: photoError } = await supabase
                 .from('business_photos')
                 .insert({
                   business_id: businessData.id,
                   photo_url: photoUrl
                 });
+                
+              if (photoError) {
+                console.error(`Error inserting photo ${index + 1}:`, photoError);
+              }
+              
+              return photoUrl;
             }
             return null;
           });
           
           await Promise.all(photoPromises);
+          console.log("All photos processed");
         }
         
-        // Display registration success and verification message
+        // 7. Display registration success and verification message
         toast({
           title: "Registration successful!",
           description: "Please check your email to verify your account."
