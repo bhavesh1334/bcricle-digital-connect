@@ -88,7 +88,7 @@ export const useRegisterForm = () => {
   };
 
   // Upload a file to Supabase Storage
-  const uploadFile = async (file: File, bucket: string, path: string) => {
+  const uploadFile = async (file: File, bucket: string, path: string, authData: any) => {
     if (!file) return null;
     
     const fileExt = file.name.split('.').pop();
@@ -135,74 +135,88 @@ export const useRegisterForm = () => {
           throw new Error(signUpError.message);
         }
 
-        if (authData?.user) {
-          // Upload logo if provided
-          let logoUrl = null;
-          if (completeFormData.logo instanceof File) {
-            logoUrl = await uploadFile(completeFormData.logo, 'business-images', 'logos');
-          }
-          
-          // Upload cover image if provided
-          let coverImageUrl = null;
-          if (completeFormData.coverImage instanceof File) {
-            coverImageUrl = await uploadFile(completeFormData.coverImage, 'business-images', 'covers');
-          }
+        if (!authData?.user) {
+          throw new Error("User registration failed");
+        }
+        
+        // First, sign in with the newly created credentials to get a valid session
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: completeFormData.email as string,
+          password: completeFormData.password as string
+        });
+        
+        if (signInError) {
+          throw new Error(signInError.message);
+        }
+        
+        // Upload logo if provided
+        let logoUrl = null;
+        if (completeFormData.logo instanceof File) {
+          logoUrl = await uploadFile(completeFormData.logo, 'business-images', 'logos', authData);
+        }
+        
+        // Upload cover image if provided
+        let coverImageUrl = null;
+        if (completeFormData.coverImage instanceof File) {
+          coverImageUrl = await uploadFile(completeFormData.coverImage, 'business-images', 'covers', authData);
+        }
 
-          // Now insert business data
-          const { data: businessData, error: businessError } = await supabase
-            .from('businesses')
-            .insert({
-              owner_id: authData.user.id,
-              name: completeFormData.businessName as string,
-              description: completeFormData.description as string,
-              category: completeFormData.category as string,
-              address: completeFormData.address || null,
-              city: completeFormData.city as string,
-              state: completeFormData.state as string,
-              pincode: completeFormData.pincode || null,
-              website: completeFormData.website || null,
-              instagram_link: completeFormData.instagramLink || null,
-              whatsapp: completeFormData.whatsapp as string,
-              founded: completeFormData.founded || null,
-              logo_url: logoUrl,
-              cover_image: coverImageUrl,
-              verified: false,
-              payment_status: 'pending'
-            })
-            .select('id')
-            .single();
+        // Now insert business data with the active session
+        const { data: businessData, error: businessError } = await supabase
+          .from('businesses')
+          .insert({
+            owner_id: authData.user.id,
+            name: completeFormData.businessName as string,
+            description: completeFormData.description as string,
+            category: completeFormData.category as string,
+            address: completeFormData.address || null,
+            city: completeFormData.city as string,
+            state: completeFormData.state as string,
+            pincode: completeFormData.pincode || null,
+            website: completeFormData.website || null,
+            instagram_link: completeFormData.instagramLink || null,
+            whatsapp: completeFormData.whatsapp as string,
+            founded: completeFormData.founded || null,
+            logo_url: logoUrl,
+            cover_image: coverImageUrl,
+            verified: false,
+            payment_status: 'pending'
+          })
+          .select('id')
+          .single();
 
-          if (businessError) {
-            throw new Error(businessError.message);
-          }
-          
-          // Upload business photos if provided
-          if (Array.isArray(completeFormData.businessPhotos) && completeFormData.businessPhotos.length > 0 && businessData) {
-            const photoPromises = completeFormData.businessPhotos.map(async (photo: File) => {
-              const photoUrl = await uploadFile(photo, 'business-images', 'photos');
-              if (photoUrl) {
-                return supabase
-                  .from('business_photos')
-                  .insert({
-                    business_id: businessData.id,
-                    photo_url: photoUrl
-                  });
-              }
-              return null;
-            });
-            
-            await Promise.all(photoPromises);
-          }
-          
-          // For now, display registration success and verification message
-          toast({
-            title: "Registration successful!",
-            description: "Please check your email to verify your account."
+        if (businessError) {
+          console.error('Business error:', businessError);
+          throw new Error(businessError.message);
+        }
+        
+        // Upload business photos if provided
+        if (Array.isArray(completeFormData.businessPhotos) && completeFormData.businessPhotos.length > 0 && businessData) {
+          const photoPromises = completeFormData.businessPhotos.map(async (photo: File) => {
+            const photoUrl = await uploadFile(photo, 'business-images', 'photos', authData);
+            if (photoUrl) {
+              return supabase
+                .from('business_photos')
+                .insert({
+                  business_id: businessData.id,
+                  photo_url: photoUrl
+                });
+            }
+            return null;
           });
           
-          navigate('/registration-success');
+          await Promise.all(photoPromises);
         }
+        
+        // Display registration success and verification message
+        toast({
+          title: "Registration successful!",
+          description: "Please check your email to verify your account."
+        });
+        
+        navigate('/registration-success');
       } catch (error: any) {
+        console.error('Registration error:', error);
         toast({
           variant: "destructive",
           title: "Registration failed",
