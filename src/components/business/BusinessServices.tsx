@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { BookOpen } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Service } from '@/data/businessData';
 
 interface BusinessServicesProps {
@@ -18,23 +17,28 @@ const BusinessServices: React.FC<BusinessServicesProps> = ({ services }) => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {services.map((service) => (
-          <Card key={service.id} className="overflow-hidden transition-all hover:shadow-lg border border-gray-100">
-            <CardHeader className="p-0">
-              {service.imageUrl && (
-                <div className="h-48 overflow-hidden">
-                  <img 
-                    src={service.imageUrl} 
-                    alt={service.name} 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                  />
+          <div key={service.id} className="rounded-xl overflow-hidden transition-all hover:shadow-lg border border-gray-100 group">
+            {service.imageUrl && (
+              <div className="h-48 overflow-hidden relative">
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 z-10"></div>
+                
+                <img 
+                  src={service.imageUrl} 
+                  alt={service.name} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                
+                {/* Content overlay on the image */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
+                  <h3 className="text-lg mb-1 text-white font-medium">{service.name}</h3>
                 </div>
-              )}
-            </CardHeader>
-            <CardContent className="p-5">
-              <CardTitle className="text-lg mb-2 text-bcircle-blue">{service.name}</CardTitle>
+              </div>
+            )}
+            <div className="p-5 bg-white">
               <p className="text-gray-600">{service.description}</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
     </div>

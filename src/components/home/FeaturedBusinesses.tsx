@@ -14,6 +14,7 @@ interface BusinessCardProps {
   imageUrl: string;
   verified?: boolean;
   slug: string;
+  description: string;
 }
 
 const BusinessCard: React.FC<BusinessCardProps> = ({
@@ -24,7 +25,8 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
   location,
   imageUrl,
   verified = false,
-  slug
+  slug,
+  description
 }) => {
   // Generate stars based on rating
   const renderStars = () => {
@@ -33,72 +35,67 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
     const hasHalfStar = rating % 1 !== 0;
 
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<Star key={`full-${i}`} className="h-4 w-4 fill-bcircle-orange text-bcircle-orange" />);
+      stars.push(<Star key={`full-${i}`} className="h-3 w-3 fill-bcircle-orange text-bcircle-orange" />);
     }
 
     if (hasHalfStar) {
       stars.push(
         <span key="half" className="relative">
-          <Star className="h-4 w-4 text-bcircle-orange" />
-          <Star className="absolute top-0 left-0 h-4 w-4 fill-bcircle-orange text-bcircle-orange overflow-hidden" style={{ clipPath: 'inset(0 50% 0 0)' }} />
+          <Star className="h-3 w-3 text-bcircle-orange" />
+          <Star className="absolute top-0 left-0 h-3 w-3 fill-bcircle-orange text-bcircle-orange overflow-hidden" style={{ clipPath: 'inset(0 50% 0 0)' }} />
         </span>
       );
     }
 
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<Star key={`empty-${i}`} className="h-4 w-4 text-gray-300" />);
+      stars.push(<Star key={`empty-${i}`} className="h-3 w-3 text-gray-300" />);
     }
 
     return stars;
   };
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover-lift card-hover">
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={imageUrl} 
-          alt={name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        {verified && (
-          <div className="absolute top-2 right-2 bg-bcircle-blue text-white text-xs px-2 py-1 rounded-full">
-            Verified
+    <Link to={`/business/${slug}`} className="group">
+      <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full">
+        <div className="h-56 overflow-hidden relative">
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 z-10"></div>
+          
+          <img 
+            src={imageUrl} 
+            alt={name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+          
+          {verified && (
+            <div className="absolute top-2 right-2 bg-bcircle-blue text-white text-xs px-2 py-1 rounded-full z-20">
+              Verified
+            </div>
+          )}
+          
+          {/* Content overlay on the image */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 z-20 text-white">
+            <h3 className="font-montserrat font-semibold text-lg">{name}</h3>
+            <p className="text-sm text-white/90 mb-2 line-clamp-2">{description}</p>
+            <div className="flex items-center space-x-1">
+              {renderStars()}
+              <span className="text-xs text-white/80 ml-1">({reviewCount})</span>
+            </div>
           </div>
-        )}
-      </div>
-      
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <div>
-            <h3 className="font-montserrat font-semibold text-lg truncate">{name}</h3>
-            <p className="text-sm text-muted-foreground">{category}</p>
+        </div>
+        
+        <div className="p-4 bg-white">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center text-sm text-muted-foreground">
+              <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
+              <span className="truncate">{location}</span>
+            </div>
+            <span className="text-sm bg-bcircle-blue/10 text-bcircle-blue px-2 py-0.5 rounded-md">{category}</span>
           </div>
-        </div>
-        
-        <div className="flex items-center space-x-1 mb-3">
-          {renderStars()}
-          <span className="text-sm text-muted-foreground ml-1">({reviewCount})</span>
-        </div>
-        
-        <div className="flex items-center text-sm text-muted-foreground mb-4">
-          <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-          <span className="truncate">{location}</span>
-        </div>
-        
-        <div className="flex space-x-2">
-          <Button asChild variant="default" size="sm" className="flex-1 bg-bcircle-blue hover:bg-bcircle-blue/90">
-            <Link to={`/business/${slug}`}>View Details</Link>
-          </Button>
-          <Button asChild variant="outline" size="sm" className="flex-1">
-            <a href={`tel:+1234567890`}>
-              <Phone className="h-4 w-4 mr-1" />
-              Call
-            </a>
-          </Button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
@@ -112,6 +109,7 @@ const FeaturedBusinesses = () => {
       reviewCount: 47,
       location: 'Civil Lines, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
+      description: 'Expert web development and IT solutions for businesses of all sizes.',
       verified: true,
       slug: 'techsphere-solutions'
     },
@@ -123,6 +121,7 @@ const FeaturedBusinesses = () => {
       reviewCount: 32,
       location: 'Shyam Nagar, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f',
+      description: 'Professional accounting and financial services for startups and enterprises.',
       verified: true,
       slug: 'finedge-accounting'
     },
@@ -134,6 +133,7 @@ const FeaturedBusinesses = () => {
       reviewCount: 39,
       location: 'Samta Colony, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1557838923-2985c318be48',
+      description: 'Comprehensive digital marketing services to grow your online presence.',
       slug: 'digital-boost-marketing'
     },
     {
@@ -144,6 +144,7 @@ const FeaturedBusinesses = () => {
       reviewCount: 51,
       location: 'Shankar Nagar, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1626178793926-22b28830aa30',
+      description: 'Find your dream property with Raipur's leading real estate experts.',
       verified: true,
       slug: 'raipur-premier-properties'
     },
@@ -155,6 +156,7 @@ const FeaturedBusinesses = () => {
       reviewCount: 64,
       location: 'Devendra Nagar, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d',
+      description: 'Quality healthcare services with state-of-the-art medical facilities.',
       verified: true,
       slug: 'healthfirst-clinic'
     },
@@ -166,6 +168,7 @@ const FeaturedBusinesses = () => {
       reviewCount: 28,
       location: 'Tatibandh, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1595514535215-9a5e23f712ad',
+      description: 'Transform your space with our creative and functional interior design solutions.',
       slug: 'spaceworks-interiors'
     }
   ];

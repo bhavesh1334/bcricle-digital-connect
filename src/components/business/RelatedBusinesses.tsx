@@ -41,23 +41,26 @@ const RelatedBusinesses: React.FC<RelatedBusinessesProps> = ({ currentCategory, 
 const BusinessCard: React.FC<{ business: Business }> = ({ business }) => {
   return (
     <Link to={`/business/${business.slug}`} className="group">
-      <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-        <div className="h-48 overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 z-10 transition-opacity"></div>
+      <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full">
+        <div className="h-56 overflow-hidden relative">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 z-10"></div>
           <img 
             src={business.imageUrl} 
             alt={business.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
-        </div>
-        <div className="p-5 flex-grow flex flex-col">
-          <h3 className="font-semibold text-lg mb-1 group-hover:text-bcircle-blue transition-colors">{business.name}</h3>
-          <p className="text-sm bg-bcircle-blue/10 text-bcircle-blue px-2 py-0.5 rounded-md inline-block mb-3 w-fit">{business.category}</p>
-          <p className="text-gray-600 text-sm flex-grow">{business.description}</p>
           
-          <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
-            <div className="text-sm text-gray-500">{business.location}</div>
-            <span className="text-bcircle-blue font-medium text-sm group-hover:underline">View Details</span>
+          {/* Content overlay on the image */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 z-20 text-white">
+            <h3 className="font-semibold text-lg mb-1">{business.name}</h3>
+            <p className="text-sm text-white/90 line-clamp-2">{business.description}</p>
+          </div>
+        </div>
+        
+        <div className="p-4 bg-white">
+          <div className="flex justify-between items-center">
+            <span className="text-sm bg-bcircle-blue/10 text-bcircle-blue px-2 py-0.5 rounded-md">{business.category}</span>
+            <span className="text-bcircle-blue text-sm group-hover:underline">View Details</span>
           </div>
         </div>
       </div>
