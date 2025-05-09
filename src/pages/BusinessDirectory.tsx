@@ -1,92 +1,106 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Phone, Filter, Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; // Import Link
+import { Search, MapPin, Phone, Filter } from 'lucide-react';
 import AdSlider from '@/components/common/AdSlider';
+import { supabase } from '@/integrations/supabase/client';
+
+
+
+interface Business {
+    address: string | null // This should be location for filtering
+    category: string
+    city: string | null
+    cover_image: string | null // This is image url
+    created_at: string | null
+    description: string
+    founded: string | null
+    id: string
+    instagram_link: string | null
+    logo_url: string | null
+    name: string
+    owner_id: string | null
+    payment_status: string | null
+    pincode: string | null
+    state: string
+    updated_at: string | null
+    verified: boolean | null
+    website: string | null
+    whatsapp: string
+
+}
 
 const BusinessDirectory = () => {
   const [filter, setFilter] = useState({
     category: '',
     location: '',
-    rating: 0
-  });
+  });  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredBusinesses, setFilteredBusinesses] = useState<Business[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  // State for pagination
+  const [businessesPerPage] = useState(8); // Display 8 businesses per page
 
-  // Mock data for businesses
-  const businesses = [
-    {
-      id: 1,
-      name: 'TechSphere Solutions',
-      category: 'Web Development & IT',
-      rating: 4.8,
-      reviewCount: 47,
-      location: 'Civil Lines, Raipur',
-      description: 'Professional web development, app development, and IT consulting services for businesses of all sizes.',
-      imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
-      verified: true,
-      slug: 'techsphere-solutions'
-    },
-    {
-      id: 2,
-      name: 'FinEdge Accounting',
-      category: 'Accounting Services',
-      rating: 4.6,
-      reviewCount: 32,
-      location: 'Shyam Nagar, Raipur',
-      description: 'Comprehensive accounting, taxation, and financial consultation services for businesses and individuals.',
-      imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f',
-      verified: true,
-      slug: 'finedge-accounting'
-    },
-    {
-      id: 3,
-      name: 'Digital Boost Marketing',
-      category: 'Digital Marketing',
-      rating: 4.7,
-      reviewCount: 39,
-      location: 'Samta Colony, Raipur',
-      description: 'Result-oriented digital marketing, SEO, social media management, and online advertising services.',
-      imageUrl: 'https://images.unsplash.com/photo-1557838923-2985c318be48',
-      slug: 'digital-boost-marketing'
-    },
-    {
-      id: 4,
-      name: 'Raipur Premier Properties',
-      category: 'Real Estate & Builders',
-      rating: 4.5,
-      reviewCount: 51,
-      location: 'Shankar Nagar, Raipur',
-      description: 'Premium residential and commercial properties across Raipur. Construction, sale, and property management.',
-      imageUrl: 'https://images.unsplash.com/photo-1626178793926-22b28830aa30',
-      verified: true,
-      slug: 'raipur-premier-properties'
-    },
-    {
-      id: 5,
-      name: 'HealthFirst Clinic',
-      category: 'Healthcare Services',
-      rating: 4.9,
-      reviewCount: 64,
-      location: 'Devendra Nagar, Raipur',
-      description: 'Comprehensive healthcare services with specialized departments and cutting-edge medical technology.',
-      imageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d',
-      verified: true,
-      slug: 'healthfirst-clinic'
-    },
-    {
-      id: 6,
-      name: 'SpaceWorks Interiors',
-      category: 'Interior Design',
-      rating: 4.4,
-      reviewCount: 28,
-      location: 'Tatibandh, Raipur',
-      description: 'Creative interior design solutions for residential and commercial spaces. Quality craftsmanship guaranteed.',
-      imageUrl: 'https://images.unsplash.com/photo-1595514535215-9a5e23f712ad',
-      slug: 'spaceworks-interiors'
+  // Async function to fetch businesses from API
+  const fetchBusinessesFromApi = async (): Promise<Business[]> => {
+    // Placeholder for API call
+    const { data, error } = await supabase.from('businesses').select('*');
+
+    if (error) {
+      console.error('Error fetching businesses:', error);
+      return [];
     }
-  ];
+    return data as Business[];
+  };
+
+  const [allBusinesses, setAllBusinesses] = useState<Business[]>([]);
+
+  useEffect(() => {
+    const getBusinesses = async () => {
+      const businesses = await fetchBusinessesFromApi();
+      setAllBusinesses(businesses);
+    }
+    getBusinesses();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
+
+  // Update filtered businesses when allBusinesses, searchTerm, or filter changes
+ useEffect(() => {
+    let filtered = allBusinesses;
+
+    // Apply search filter
+ if (searchTerm) {
+      filtered = filtered.filter(business =>
+        business.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply category filter
+    if (filter.category) {
+      filtered = filtered.filter(business => business.category === filter.category);
+    }
+
+    // Apply location filter
+    if (filter.location) {
+      filtered = filtered.filter(business => business.address?.includes(filter.location));
+    }
+
+    // Apply verified filter (assuming a checkbox controls this)
+    // if (filter.verified) {
+    //   filtered = filtered.filter(business => business.verified);
+    // }
+
+    setFilteredBusinesses(filtered);
+    setCurrentPage(1); // Reset to first page on filter change
+  }, [allBusinesses, searchTerm, filter]);
+
+  // Pagination logic
+  const indexOfLastBusiness = currentPage * businessesPerPage;
+  const indexOfFirstBusiness = indexOfLastBusiness - businessesPerPage;
+  const currentBusinesses = filteredBusinesses.slice(indexOfFirstBusiness, indexOfLastBusiness);
 
   // Mock data for ad slider
   const adSlides = [
@@ -122,63 +136,48 @@ const BusinessDirectory = () => {
     }
   ];
 
-  // Generate stars based on rating
-  const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<Star key={`full-${i}`} className="h-4 w-4 fill-bcircle-orange text-bcircle-orange" />);
-    }
-
-    if (hasHalfStar) {
-      stars.push(
-        <span key="half" className="relative">
-          <Star className="h-4 w-4 text-bcircle-orange" />
-          <Star className="absolute top-0 left-0 h-4 w-4 fill-bcircle-orange text-bcircle-orange overflow-hidden" style={{ clipPath: 'inset(0 50% 0 0)' }} />
-        </span>
-      );
-    }
-
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(<Star key={`empty-${i}`} className="h-4 w-4 text-gray-300" />);
-    }
-
-    return stars;
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
   };
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  // Generate page numbers
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(filteredBusinesses.length / businessesPerPage); i++) { // Calculate total pages and generate numbers
+    pageNumbers.push(i);
+  }
 
   return (
     <MainLayout>
       {/* Hero Section */}
+      <>
       <section className="bg-bcircle-blue text-white py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="font-montserrat font-bold text-4xl md:text-5xl mb-6 animate-fade-in">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="font-bold text-4xl md:text-5xl mb-6 animate-fade-in">
               Explore Raipur's Businesses
             </h1>
             <p className="text-xl max-w-2xl mx-auto text-white/80 animate-slide-up">
               Discover and connect with the best local businesses in your area
             </p>
-            
+
             {/* Search Bar */}
             <div className="mt-10 bg-white/10 backdrop-blur-md rounded-lg p-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
               <div className="flex flex-col md:flex-row gap-3">
-                <div className="relative flex-grow">
+                <div className="relative flex-grow ">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white h-5 w-5" />
-                  <Input 
-                    type="search" 
-                    placeholder="Search businesses, services..." 
-                    className="pl-10 pr-4 w-full bg-white/10 border-white/20 text-white placeholder:text-white/70 focus:border-white"
-                  />
-                </div>
-                <Button className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white">
-                  Search
-                </Button>
+                  <Input
+ type="search"
+ placeholder="Search businesses, services..."
+ className="pl-10 pr-4 w-full bg-white/20 border-white/30 text-white placeholder:text-white/80 focus:border-white rounded-lg h-12 outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-200"
+ value={searchTerm}
+ onChange={handleSearch}
+ />
               </div>
             </div>
-          </div>
+            </div>
+        </div>
         </div>
       </section>
 
@@ -231,38 +230,6 @@ const BusinessDirectory = () => {
                     </select>
                   </div>
                   
-                  {/* Rating Filter */}
-                  <div>
-                    <h3 className="text-sm font-medium mb-2">Rating</h3>
-                    <div className="space-y-2">
-                      <label className="flex items-center">
-                        <input type="radio" name="rating" value="0" checked={filter.rating === 0} onChange={() => setFilter({...filter, rating: 0})} className="mr-2" />
-                        <span>All Ratings</span>
-                      </label>
-                      <label className="flex items-center">
-                        <input type="radio" name="rating" value="4" checked={filter.rating === 4} onChange={() => setFilter({...filter, rating: 4})} className="mr-2" />
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 fill-bcircle-orange text-bcircle-orange" />
-                          <Star className="h-4 w-4 fill-bcircle-orange text-bcircle-orange" />
-                          <Star className="h-4 w-4 fill-bcircle-orange text-bcircle-orange" />
-                          <Star className="h-4 w-4 fill-bcircle-orange text-bcircle-orange" />
-                          <Star className="h-4 w-4 text-gray-300" />
-                          <span className="ml-1">& up</span>
-                        </div>
-                      </label>
-                      <label className="flex items-center">
-                        <input type="radio" name="rating" value="3" checked={filter.rating === 3} onChange={() => setFilter({...filter, rating: 3})} className="mr-2" />
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 fill-bcircle-orange text-bcircle-orange" />
-                          <Star className="h-4 w-4 fill-bcircle-orange text-bcircle-orange" />
-                          <Star className="h-4 w-4 fill-bcircle-orange text-bcircle-orange" />
-                          <Star className="h-4 w-4 text-gray-300" />
-                          <Star className="h-4 w-4 text-gray-300" />
-                          <span className="ml-1">& up</span>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
                   
                   {/* Verified Filter */}
                   <div>
@@ -286,43 +253,34 @@ const BusinessDirectory = () => {
                 <AdSlider slides={adSlides} size="medium" />
               </div>
               
-              <div className="space-y-6">
-                {businesses.map((business) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {currentBusinesses.map((business: Business) => (
                   <div key={business.id} className="bg-white rounded-lg border border-border overflow-hidden shadow-sm hover-lift">
-                    <div className="flex flex-col md:flex-row">
-                      <div className="md:w-1/3 relative">
-                        <img 
-                          src={business.imageUrl} 
-                          alt={business.name}
-                          className="w-full h-48 md:h-full object-cover"
-                        />
-                        {business.verified && (
-                          <div className="absolute top-2 left-2 bg-bcircle-blue text-white text-xs px-2 py-1 rounded-full">
-                            Verified
-                          </div>
-                        )}
-                      </div>
-                      <div className="md:w-2/3 p-6">
+                    <div className="relative h-40">
+                      <img className="w-full h-full object-cover rounded-t-lg"
+                        src={business.cover_image}
+                        alt={business.name}
+                    
+                      />
+                      {business.verified && (
+                        <div className="absolute top-2 left-2 bg-bcircle-blue text-white text-xs px-2 py-1 rounded-full">
+                          Verified
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4 space-y-3 flex flex-col">
                         <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-montserrat font-semibold text-xl text-bcircle-blue">{business.name}</h3>
-                          <div className="flex items-center space-x-1">
-                            {renderStars(business.rating)}
-                            <span className="text-sm text-muted-foreground ml-1">({business.reviewCount})</span>
-                          </div>
+                          <h3 className="font-semibold text-bcircle-blue text-lg line-clamp-2">{business.name}</h3>
                         </div>
                         
-                        <p className="text-sm text-bcircle-orange font-medium mb-2">{business.category}</p>
-                        
-                        <div className="flex items-center text-sm text-muted-foreground mb-4">
+                        <div className="flex items-center text-muted-foreground text-sm line-clamp-1 flex-grow">
                           <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                          <span>{business.location}</span>
+                          <span>{business.address}</span>
                         </div>
-                        
-                        <p className="text-muted-foreground mb-4 line-clamp-2">{business.description}</p>
                         
                         <div className="flex flex-wrap gap-3">
                           <Button asChild variant="default" size="sm" className="bg-bcircle-blue hover:bg-bcircle-blue/90">
-                            <Link to={`/business/${business.slug}`}>View Details</Link>
+                            <Link to={`/business/${business.id}`}>View Details</Link>
                           </Button>
                           <Button asChild variant="outline" size="sm">
                             <a href={`tel:+1234567890`}>
@@ -341,72 +299,44 @@ const BusinessDirectory = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
                 ))}
               </div>
               
               {/* Pagination */}
               <div className="mt-8 flex justify-center">
-                <nav className="inline-flex rounded-md shadow">
-                  <a
-                    href="#"
-                    className="inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                <nav className="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <button
+                    onClick={() => paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
+                    <span className="sr-only">Previous</span>
                     Previous
-                  </a>
-                  <a
-                    href="#"
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 bg-bcircle-blue text-sm font-medium text-white"
+                  </button>
+                  {pageNumbers.map(number => (
+                    <button
+ key={number}
+                      onClick={() => paginate(number)}
+                      className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium transition-colors ${currentPage === number ? 'bg-bcircle-blue text-white' : 'text-gray-700 hover:bg-gray-50'}`}
                   >
-                    1
-                  </a>
-                  <a
-                    href="#"
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                      {number}
+                    </button>
+                  ))}
+                  <button
+ onClick={() => paginate(currentPage + 1)}
+                    disabled={currentPage === pageNumbers.length || pageNumbers.length === 0} // Disable next on last page or if no pages
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    2
-                  </a>
-                  <a
-                    href="#"
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
-                    3
-                  </a>
-                  <a
-                    href="#"
-                    className="inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
+                    <span className="sr-only">Next</span>
                     Next
-                  </a>
+                  </button>
                 </nav>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* Action Buttons */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-bcircle-blue/5 rounded-lg border border-bcircle-blue/20 p-6 text-center">
-              <h3 className="font-montserrat font-semibold text-xl mb-4 text-bcircle-blue">Own a Business?</h3>
-              <p className="text-muted-foreground mb-6">List your business on BCIRCLE and get discovered by potential customers in Raipur.</p>
-              <Button asChild className="bg-bcircle-blue hover:bg-bcircle-blue/90">
-                <Link to="/register">List Your Business</Link>
-              </Button>
-            </div>
-            
-            <div className="bg-bcircle-orange/5 rounded-lg border border-bcircle-orange/20 p-6 text-center">
-              <h3 className="font-montserrat font-semibold text-xl mb-4 text-bcircle-orange">Is This Your Business?</h3>
-              <p className="text-muted-foreground mb-6">Claim and verify your business listing to update information and respond to reviews.</p>
-              <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white">
-                <Link to="/claim-business">Claim This Listing</Link>
-              </Button>
-            </div>
           </div>
-        </div>
-      </section>
+       </section>
+      </>
     </MainLayout>
   );
 };
