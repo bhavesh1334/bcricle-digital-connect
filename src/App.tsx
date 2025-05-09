@@ -21,6 +21,8 @@ import AuthGuard from "./components/auth/AuthGuard";
 import VerifyEmail from "./app/VerifyEmail";
 import CompleteRegistration from "./app/CompleteRegistration";
 import AuthRoute from "./components/AuthRoute";
+import Profile from "./pages/Profile";
+import Services from "./pages/Services";
 
 const queryClient = new QueryClient();
 
@@ -42,12 +44,14 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/registration-success" element={<RegistrationSuccess />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/services" element={<Services />} />
             
             {/* Protected Routes (require authentication) */}
             <Route path="/categories" element={<AuthGuard><Categories /></AuthGuard>} />
             <Route path="/complete-registration" element={<AuthRoute><CompleteRegistration /></AuthRoute>} />
             <Route path="/businesses" element={<AuthGuard><BusinessDirectory /></AuthGuard>} />
             <Route path="/business/:slug" element={<AuthGuard><BusinessDetails /></AuthGuard>} />
+            <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
             
             {/* Catch-all Route */}
             <Route path="*" element={<NotFound />} />

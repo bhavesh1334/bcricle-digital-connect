@@ -1,6 +1,5 @@
-
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Menu, X, LogOut } from 'lucide-react';
@@ -16,11 +15,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const location = useLocation();
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -52,6 +57,20 @@ const Header = () => {
       return user.email?.charAt(0).toUpperCase() || "?";
     }
   };
+
+  // Get avatar URL from user profile or user metadata
+  const getAvatarUrl = () => {
+    if (!user) return null;
+    
+    // Check for profile_image_url in user metadata first, then fallback to avatar_url
+    const userMetadata = user.user_metadata;
+    return userMetadata?.profile_image_url || userMetadata?.avatar_url || null;
+  };
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-border/40 shadow-sm">
@@ -86,18 +105,72 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link to="/" className="text-foreground hover:text-bcircle-blue font-medium text-sm">Home</Link>
-          <Link to="/categories" className="text-foreground hover:text-bcircle-blue font-medium text-sm">Categories</Link>
-          <Link to="/services" className="text-foreground hover:text-bcircle-blue font-medium text-sm">Services</Link>
-          <Link to="/about" className="text-foreground hover:text-bcircle-blue font-medium text-sm">About</Link>
-          <Link to="/contact" className="text-foreground hover:text-bcircle-blue font-medium text-sm">Contact</Link>
+          <Link 
+            to="/" 
+            className={cn(
+              "font-medium text-sm transition-colors",
+              isActive('/') 
+                ? "text-bcircle-blue border-b-2 border-bcircle-blue pb-1" 
+                : "text-foreground hover:text-bcircle-blue"
+            )}
+          >
+            Home
+          </Link>
+          
+          <Link 
+            to="/categories" 
+            className={cn(
+              "font-medium text-sm transition-colors",
+              isActive('/categories') 
+                ? "text-bcircle-blue border-b-2 border-bcircle-blue pb-1" 
+                : "text-foreground hover:text-bcircle-blue"
+            )}
+          >
+            Categories
+          </Link>
+          
+          <Link 
+            to="/services" 
+            className={cn(
+              "font-medium text-sm transition-colors",
+              isActive('/services') 
+                ? "text-bcircle-blue border-b-2 border-bcircle-blue pb-1" 
+                : "text-foreground hover:text-bcircle-blue"
+            )}
+          >
+            Services
+          </Link>
+          
+          <Link 
+            to="/about" 
+            className={cn(
+              "font-medium text-sm transition-colors",
+              isActive('/about') 
+                ? "text-bcircle-blue border-b-2 border-bcircle-blue pb-1" 
+                : "text-foreground hover:text-bcircle-blue"
+            )}
+          >
+            About
+          </Link>
+          
+          <Link 
+            to="/contact" 
+            className={cn(
+              "font-medium text-sm transition-colors",
+              isActive('/contact') 
+                ? "text-bcircle-blue border-b-2 border-bcircle-blue pb-1" 
+                : "text-foreground hover:text-bcircle-blue"
+            )}
+          >
+            Contact
+          </Link>
           
           {/* Conditional rendering based on auth state */}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="focus:outline-none">
                 <Avatar className="h-9 w-9 border-2 border-bcircle-blue">
-                  <AvatarImage src={user.user_metadata?.avatar_url} />
+                  <AvatarImage src={getAvatarUrl()} />
                   <AvatarFallback className="bg-bcircle-blue text-white">
                     {getInitials()}
                   </AvatarFallback>
@@ -122,7 +195,7 @@ const Header = () => {
                 <Link to="/login">Login</Link>
               </Button> */}
               <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white">
-                <Link to="/login">Login</Link>
+                <Link to="/register">Complete Registration</Link>
               </Button>
             </>
           )}
@@ -151,17 +224,103 @@ const Header = () => {
               />
             </div>
             <nav className="flex flex-col gap-4">
-              <Link to="/" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Home</Link>
-              <Link to="/categories" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Categories</Link>
-              <Link to="/services" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Services</Link>
-              <Link to="/about" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">About</Link>
-              <Link to="/contact" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Contact</Link>
+              <Link 
+                to="/" 
+                className={cn(
+                  "py-2 border-b border-border",
+                  isActive('/') 
+                    ? "text-bcircle-blue font-medium" 
+                    : "text-foreground hover:text-bcircle-blue"
+                )}
+              >
+                Home
+              </Link>
+              
+              <Link 
+                to="/categories" 
+                className={cn(
+                  "py-2 border-b border-border",
+                  isActive('/categories') 
+                    ? "text-bcircle-blue font-medium" 
+                    : "text-foreground hover:text-bcircle-blue"
+                )}
+              >
+                Categories
+              </Link>
+              
+              <Link 
+                to="/services" 
+                className={cn(
+                  "py-2 border-b border-border",
+                  isActive('/services') 
+                    ? "text-bcircle-blue font-medium" 
+                    : "text-foreground hover:text-bcircle-blue"
+                )}
+              >
+                Services
+              </Link>
+              
+              <Link 
+                to="/about" 
+                className={cn(
+                  "py-2 border-b border-border",
+                  isActive('/about') 
+                    ? "text-bcircle-blue font-medium" 
+                    : "text-foreground hover:text-bcircle-blue"
+                )}
+              >
+                About
+              </Link>
+              
+              <Link 
+                to="/contact" 
+                className={cn(
+                  "py-2 border-b border-border",
+                  isActive('/contact') 
+                    ? "text-bcircle-blue font-medium" 
+                    : "text-foreground hover:text-bcircle-blue"
+                )}
+              >
+                Contact
+              </Link>
               
               {user && (
                 <>
-                  <Link to="/profile" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Profile</Link>
-                  <Link to="/dashboard" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Dashboard</Link>
-                  <Link to="/settings" className="py-2 border-b border-border text-foreground hover:text-bcircle-blue">Settings</Link>
+                  <Link 
+                    to="/profile" 
+                    className={cn(
+                      "py-2 border-b border-border",
+                      isActive('/profile') 
+                        ? "text-bcircle-blue font-medium" 
+                        : "text-foreground hover:text-bcircle-blue"
+                    )}
+                  >
+                    Profile
+                  </Link>
+                  
+                  <Link 
+                    to="/dashboard" 
+                    className={cn(
+                      "py-2 border-b border-border",
+                      isActive('/dashboard') 
+                        ? "text-bcircle-blue font-medium" 
+                        : "text-foreground hover:text-bcircle-blue"
+                    )}
+                  >
+                    Dashboard
+                  </Link>
+                  
+                  <Link 
+                    to="/settings" 
+                    className={cn(
+                      "py-2 border-b border-border",
+                      isActive('/settings') 
+                        ? "text-bcircle-blue font-medium" 
+                        : "text-foreground hover:text-bcircle-blue"
+                    )}
+                  >
+                    Settings
+                  </Link>
                 </>
               )}
             </nav>
@@ -177,9 +336,9 @@ const Header = () => {
                   <Button asChild variant="outline" className="flex-1">
                     <Link to="/login">Login</Link>
                   </Button>
-                  <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white flex-1">
-                    <Link to="/register">Join Now</Link>
-                  </Button>
+                  {/* <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white flex-1">
+                    <Link to="/register">Complete Registration</Link>
+                  </Button> */}
                 </>
               )}
             </div>
