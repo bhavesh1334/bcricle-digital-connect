@@ -20,7 +20,7 @@ const HeroSection = () => {
           </h1>
           
           <p className="text-lg md:text-xl mb-8 text-gray-100 max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            Find local businesses, services, and professionals in Raipur. The digital backbone for your business networking needs.
+            Find businesses, services, and professionals in Chhattisgarh. The digital backbone for your business networking needs.
           </p>
           
           {/* Search Box */}
@@ -46,8 +46,8 @@ const HeroSection = () => {
               <Link to="/register">Join Now</Link>
             </Button>}
             <Button asChild size="lg" variant="outline" className="border-white text-white bg-white/5 hover:bg-white/10">
-              <Link to="/categories">
-                Explore Raipur's Business Circle
+              <Link to="/businesses">
+                Explore Chhattisgarh Business Network
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

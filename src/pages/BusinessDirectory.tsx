@@ -156,7 +156,7 @@ const BusinessDirectory = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="font-bold text-4xl md:text-5xl mb-6 animate-fade-in">
-              Explore Raipur's Businesses
+              Explore Chhattisgarh's Businesses
             </h1>
             <p className="text-xl max-w-2xl mx-auto text-white/80 animate-slide-up">
               Discover and connect with the best local businesses in your area

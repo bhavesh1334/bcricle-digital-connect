@@ -12,7 +12,7 @@ const CTASection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-montserrat font-bold text-3xl md:text-4xl mb-6">
-            Ready to Join Raipur's Business Circle?
+            Ready to Join Chhattisgarh's Business Circle?
           </h2>
           
           <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
@@ -27,7 +27,7 @@ const CTASection = () => {
               </Link>
             </Button>}
             <Button asChild size="lg" variant="outline" className="border-white text-white bg-white/5 hover:bg-white/10">
-              <Link to="/categories">
+              <Link to="/businesses">
                 Explore Businesses
               </Link>
             </Button>

@@ -104,7 +104,7 @@ const FeaturedCategories = () => {
             Explore Business Categories
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Browse through Raipur's most popular business categories and find the services you need.
+            Browse through Chhattisgarh's most popular business categories and find the services you need.
           </p>
         </div>
 
@@ -121,7 +121,7 @@ const FeaturedCategories = () => {
         </div>
 
         <div className="text-center mt-12">
-          <Link to="/categories" className="inline-flex items-center text-bcircle-blue hover:text-bcircle-orange transition-colors font-medium">
+          <Link to="/businesses" className="inline-flex items-center text-bcircle-blue hover:text-bcircle-orange transition-colors font-medium">
             View All Categories
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
