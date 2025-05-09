@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -57,6 +56,15 @@ const Header = () => {
     } else {
       return user.email?.charAt(0).toUpperCase() || "?";
     }
+  };
+
+  // Get avatar URL from user profile or user metadata
+  const getAvatarUrl = () => {
+    if (!user) return null;
+    
+    // Check for profile_image_url in user metadata first, then fallback to avatar_url
+    const userMetadata = user.user_metadata;
+    return userMetadata?.profile_image_url || userMetadata?.avatar_url || null;
   };
 
   // Close mobile menu when route changes
@@ -157,7 +165,7 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger className="focus:outline-none">
                 <Avatar className="h-9 w-9 border-2 border-bcircle-blue">
-                  <AvatarImage src={user.user_metadata?.avatar_url} />
+                  <AvatarImage src={getAvatarUrl()} />
                   <AvatarFallback className="bg-bcircle-blue text-white">
                     {getInitials()}
                   </AvatarFallback>
