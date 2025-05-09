@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -80,8 +79,8 @@ export const useRegisterForm = () => {
 
   // Function to handle moving to the next step based on current step
   const nextStep = async () => {
-    if (step === 1 && !isVerified) {
-      // Validate step 1 only if not verified and on step 1
+    if (step === 1) {
+      // Validate step 1
       const valid = await form1.trigger();
       if (valid) {
         const step1Data = form1.getValues();
@@ -112,6 +111,9 @@ export const useRegisterForm = () => {
             title: "Account Created!",
             description: "Please check your email to verify your account before proceeding."
           });
+          
+          // Modified: Navigate to registration-success after step 1
+          navigate('/registration-success');
 
         } catch (error: any) {
           console.error('Signup error:', error);
@@ -124,14 +126,6 @@ export const useRegisterForm = () => {
           setIsLoading(false);
         }
       }
-    } else if (step === 1 && isVerified) {
-      // If already verified and on step 1, just move to step 2
-      const valid = await form1.trigger(); // Still validate to ensure data is captured
-      if (valid) {
-        const step1Data = form1.getValues();
-        setFormData(prev => ({ ...prev, ...step1Data })); // Preserve existing data
-        setStep(2);
-      }
     } else if (step === 2) {
       const valid = await form2.trigger();
       if (valid) {
@@ -143,7 +137,7 @@ export const useRegisterForm = () => {
 
   // Function to move to the previous step
   const prevStep = () => {
-    setStep(currentStep => Math.max(1, currentStep - 1)); // Allow going back to step 1
+    setStep(currentStep => Math.max(1, currentStep - 1));
   };
 
   // Upload a file to Supabase Storage
@@ -307,7 +301,7 @@ export const useRegisterForm = () => {
     form2,
     form3,
     isLoading,
-    isVerified, // Expose isVerified state
+    isVerified,
     nextStep,
     prevStep,
     onSubmit
