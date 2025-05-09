@@ -5,9 +5,10 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Building, Mail, Phone, User, Briefcase } from 'lucide-react';
+import { Building, Mail, Phone, User, Briefcase, Upload, Camera, Image } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
 
 interface Business {
   id: string;
@@ -26,6 +27,9 @@ const Profile = () => {
   const [profile, setProfile] = useState<any>(null);
   const [business, setBusiness] = useState<Business | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
+  const { toast } = useToast();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchProfileAndBusiness = async () => {
@@ -65,6 +69,96 @@ const Profile = () => {
     fetchProfileAndBusiness();
   }, [user]);
 
+  const handleUploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !event.target.files[0]) return;
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: "You must be logged in to update your profile image."
+      });
+      return;
+    }
+
+    const file = event.target.files[0];
+    const fileSize = file.size / 1024 / 1024; // in MB
+    
+    // Validate file size (max 2MB)
+    if (fileSize > 2) {
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: "Please select an image smaller than 2MB."
+      });
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        variant: "destructive",
+        title: "Invalid file type",
+        description: "Please select an image file."
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      // Upload file to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}-${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('profile-avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL of the uploaded image
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-avatars')
+        .getPublicUrl(filePath);
+
+      // Update user profile with the new avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      // Update local profile state
+      setProfile(prev => ({ ...prev, avatar_url: publicUrl }));
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile image has been updated successfully."
+      });
+    } catch (error: any) {
+      console.error('Error uploading avatar:', error);
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: error.message || "An error occurred during the upload."
+      });
+    } finally {
+      setIsUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   if (!user) {
     return (
       <MainLayout>
@@ -97,12 +191,36 @@ const Profile = () => {
           {/* Profile Header */}
           <div className="bg-gradient-to-r from-bcircle-blue to-blue-500 text-white p-6 md:p-10">
             <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-              <Avatar className="h-24 w-24 border-4 border-white">
-                <AvatarImage src={profile?.avatar_url} />
-                <AvatarFallback className="bg-white text-bcircle-blue text-2xl font-bold">
-                  {getInitials()}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative group">
+                <Avatar className="h-24 w-24 border-4 border-white">
+                  <AvatarImage src={profile?.avatar_url} />
+                  <AvatarFallback className="bg-white text-bcircle-blue text-2xl font-bold">
+                    {getInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                
+                <button 
+                  onClick={triggerFileInput}
+                  className="absolute bottom-0 right-0 bg-white text-bcircle-blue p-1.5 rounded-full border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors"
+                  disabled={isUploading}
+                  aria-label="Change profile picture"
+                >
+                  {isUploading ? (
+                    <div className="h-5 w-5 border-2 border-bcircle-blue border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <Camera className="h-5 w-5" />
+                  )}
+                </button>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleUploadAvatar}
+                  disabled={isUploading}
+                />
+              </div>
               
               <div className="text-center md:text-left">
                 {isLoading ? (
