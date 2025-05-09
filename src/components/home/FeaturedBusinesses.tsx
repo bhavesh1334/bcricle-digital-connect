@@ -144,7 +144,7 @@ const FeaturedBusinesses = () => {
       reviewCount: 51,
       location: 'Shankar Nagar, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1626178793926-22b28830aa30',
-      description: 'Find your dream property with Raipur's leading real estate experts.',
+      description: "Find your dream property with Raipur's leading real estate experts. ",
       verified: true,
       slug: 'raipur-premier-properties'
     },
