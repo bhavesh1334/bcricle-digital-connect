@@ -169,7 +169,7 @@ const Header = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="focus:outline-none">
-                <Avatar className="h-9 w-9 border-2 border-bcircle-blue">
+                <Avatar className="h-9 w-9">
                   <AvatarImage src={getAvatarUrl()} />
                   <AvatarFallback className="bg-bcircle-blue text-white">
                     {getInitials()}
@@ -195,7 +195,7 @@ const Header = () => {
                 <Link to="/login">Login</Link>
               </Button> */}
               <Button asChild className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white">
-                <Link to="/register">Complete Registration</Link>
+                <Link to="/register">Join Now</Link>
               </Button>
             </>
           )}
