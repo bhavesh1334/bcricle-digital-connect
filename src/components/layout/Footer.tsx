@@ -87,8 +87,8 @@ const Footer = () => {
         <div className="border-t border-gray-700 mt-12 pt-6 text-sm text-gray-400 flex flex-col md:flex-row justify-between items-center">
           <p>© {new Date().getFullYear()} CBN. All rights reserved.</p>
           <div className="flex gap-4 mt-4 md:mt-0">
-            <Link to="/privacy-policy" className="hover:text-bcircle-orange transition-colors">Privacy Policy</Link>
-            <Link to="/terms-of-service" className="hover:text-bcircle-orange transition-colors">Terms of Service</Link>
+ <Link to="/privacy-policy" className="hover:text-bcircle-orange transition-colors">Privacy Policy</Link>
+ <Link to="/terms-of-service" className="hover:text-bcircle-orange transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@ interface BusinessCardProps {
   imageUrl: string;
   verified?: boolean;
   slug: string;
+  description?: string;
 }
 
 const BusinessCard: React.FC<BusinessCardProps> = ({
@@ -21,31 +22,36 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
   location,
   imageUrl,
   verified = false,
-  slug
+  slug,
+  description
 }) => {
   // Generate stars based on rating
 
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover-lift card-hover">
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={imageUrl} 
-          alt={name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        {verified && (
-          <div className="absolute top-2 right-2 bg-bcircle-blue text-white text-xs px-2 py-1 rounded-full">
-            Verified
-          </div>
-        )}
-      </div>
-      
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <div>
-            <h3 className="font-montserrat font-semibold text-lg truncate">{name}</h3>
-            <p className="text-sm text-muted-foreground">{category}</p>
+    <Link to={`/business/${slug}`} className="group">
+      <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full">
+        <div className="h-56 overflow-hidden relative">
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 z-10"></div>
+          
+          <img 
+            src={imageUrl} 
+            alt={name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+          
+          {verified && (
+            <div className="absolute top-2 right-2 bg-bcircle-blue text-white text-xs px-2 py-1 rounded-full z-20">
+              Verified
+            </div>
+          )}
+          
+          {/* Content overlay on the image */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 z-20 text-white">
+            <h3 className="font-montserrat font-semibold text-lg">{name}</h3>
+            <p className="text-sm text-white/90 mb-2 line-clamp-2">{description}</p>
+  
           </div>
         </div>
          
@@ -63,7 +69,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
           </Link>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
@@ -76,6 +82,7 @@ const FeaturedBusinesses = () => {
      
       location: 'Civil Lines, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
+      description: 'Expert web development and IT solutions for businesses of all sizes.',
       verified: true,
       slug: 'techsphere-solutions'
     },
@@ -86,6 +93,7 @@ const FeaturedBusinesses = () => {
     
       location: 'Shyam Nagar, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f',
+      description: 'Professional accounting and financial services for startups and enterprises.',
       verified: true,
       slug: 'finedge-accounting'
     },
@@ -96,6 +104,7 @@ const FeaturedBusinesses = () => {
    
       location: 'Samta Colony, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1557838923-2985c318be48',
+      description: 'Comprehensive digital marketing services to grow your online presence.',
       slug: 'digital-boost-marketing'
     },
     {
@@ -105,6 +114,7 @@ const FeaturedBusinesses = () => {
      
       location: 'Shankar Nagar, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1626178793926-22b28830aa30',
+      description: "Find your dream property with Raipur's leading real estate experts. ",
       verified: true,
       slug: 'raipur-premier-properties'
     },
@@ -115,6 +125,7 @@ const FeaturedBusinesses = () => {
     
       location: 'Devendra Nagar, Raipur',
       imageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d',
+      description: 'Quality healthcare services with state-of-the-art medical facilities.',
       verified: true,
       slug: 'healthfirst-clinic'
     },
