@@ -23,6 +23,8 @@ import CompleteRegistration from "./app/CompleteRegistration";
 import AuthRoute from "./components/AuthRoute";
 import Profile from "./pages/Profile";
 import Services from "./pages/Services";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +47,8 @@ const App = () => (
             <Route path="/registration-success" element={<RegistrationSuccess />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             
             {/* Protected Routes (require authentication) */}
             <Route path="/categories" element={<AuthGuard><Categories /></AuthGuard>} />

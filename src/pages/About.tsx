@@ -41,12 +41,12 @@ const About = () => {
   ];
 
   return (
-    <MainLayout>
+    <MainLayout> 
       {/* About Hero */}
-      <section className="bg-bcircle-blue text-white py-20">
+      <section className="bg-cbn-blue text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="font-montserrat font-bold text-4xl md:text-5xl mb-6 animate-fade-in">
-            About BCIRCLE
+ About CBN
           </h1>
           <p className="text-xl max-w-3xl mx-auto mb-8 text-white/80 animate-slide-up">
             The digital backbone of Chhattisgarh's business community
@@ -59,13 +59,13 @@ const About = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="bg-bcircle-blue/5 p-8 rounded-lg border border-bcircle-blue/20">
-                <h2 className="font-montserrat font-semibold text-2xl mb-4 text-bcircle-blue">Our Vision</h2>
+              <div className="bg-cbn-blue/5 p-8 rounded-lg border border-cbn-blue/20">
+                <h2 className="font-montserrat font-semibold text-2xl mb-4 text-cbn-blue">Our Vision</h2>
                 <p className="text-muted-foreground">
                   "To become the digital backbone of Chhattisgarh's business community — one connection at a time."
                 </p>
               </div>
-              <div className="bg-bcircle-orange/5 p-8 rounded-lg border border-bcircle-orange/20">
+              <div className="bg-cbn-orange/5 p-8 rounded-lg border border-cbn-orange/20">
                 <h2 className="font-montserrat font-semibold text-2xl mb-4 text-bcircle-orange">Our Mission</h2>
                 <ul className="text-muted-foreground space-y-2">
                   <li>• Empower local businesses to be seen, found, and grow online</li>
@@ -89,20 +89,20 @@ const About = () => {
       {/* The Idea Behind BCIRCLE */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="font-montserrat font-bold text-3xl text-center mb-12 text-bcircle-blue">
-              The Idea Behind BCIRCLE
+          <div className="max-w-4xl mx-auto"> 
+            <h2 className="font-montserrat font-bold text-3xl text-center mb-12 text-cbn-blue">
+              The Idea Behind CBN
             </h2>
             
             <div className="space-y-8">
               <p className="text-muted-foreground">
-                BCIRCLE was born from a simple observation: while Chhattisgarh has a vibrant and diverse business community, 
+ CBN was born from a simple observation: while Chhattisgarh has a vibrant and diverse business community,
                 many local businesses lacked the digital presence needed to thrive in today's economy. Traditional business 
                 directories were outdated, and national platforms often overlooked the unique needs of our local business ecosystem.
               </p>
               
               <p className="text-muted-foreground">
-                We created BCIRCLE to bridge this gap – providing a digital platform specifically designed for Chhattisgarh businesses, 
+                We created CBN to bridge this gap – providing a digital platform specifically designed for Chhattisgarh businesses,
                 starting with Raipur. Our focus is on meaningful connections rather than just listings, enabling direct communication 
                 between businesses and customers through calls, WhatsApp, and email.
               </p>
@@ -119,13 +119,13 @@ const About = () => {
       {/* USP Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="font-montserrat font-bold text-3xl text-center mb-12 text-bcircle-blue">
+          <h2 className="font-montserrat font-bold text-3xl text-center mb-12 text-cbn-blue">
             What Makes Us Different
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-6 rounded-lg border border-border shadow-sm hover-lift">
-              <div className="h-12 w-12 bg-bcircle-blue/10 rounded-full flex items-center justify-center text-bcircle-blue mb-4">
+              <div className="h-12 w-12 bg-cbn-blue/10 rounded-full flex items-center justify-center text-cbn-blue mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -138,7 +138,7 @@ const About = () => {
             </div>
             
             <div className="bg-white p-6 rounded-lg border border-border shadow-sm hover-lift">
-              <div className="h-12 w-12 bg-bcircle-blue/10 rounded-full flex items-center justify-center text-bcircle-blue mb-4">
+              <div className="h-12 w-12 bg-cbn-blue/10 rounded-full flex items-center justify-center text-cbn-blue mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
@@ -150,7 +150,7 @@ const About = () => {
             </div>
             
             <div className="bg-white p-6 rounded-lg border border-border shadow-sm hover-lift">
-              <div className="h-12 w-12 bg-bcircle-blue/10 rounded-full flex items-center justify-center text-bcircle-blue mb-4">
+              <div className="h-12 w-12 bg-cbn-blue/10 rounded-full flex items-center justify-center text-cbn-blue mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -166,13 +166,13 @@ const About = () => {
 
       {/* CTA */}
       <section className="py-16 bg-bcircle-blue text-white">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 text-center"> 
           <h2 className="font-montserrat font-bold text-3xl md:text-4xl mb-6">
-            Join the BCIRCLE Community Today
+            Join the CBN Community Today
           </h2>
           
           <p className="text-lg max-w-2xl mx-auto mb-8 text-white/80">
-            Be part of Chhattisgarh's growing digital business network. Register your business now.
+ Be part of Chhattisgarh's growing digital business network. Register your business now.
           </p>
           
           <Button asChild size="lg" className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white font-medium">
