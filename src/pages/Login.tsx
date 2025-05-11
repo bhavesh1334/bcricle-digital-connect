@@ -71,8 +71,8 @@ const Login = () => {
       <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center bg-gray-50 py-12 px-4">
         <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-sm border border-gray-200">
           <div className="text-center">
-            <h1 className="text-3xl font-montserrat font-bold text-bcircle-blue">Sign in</h1>
-            <p className="mt-2 text-sm text-gray-600">Access your Business Circle account</p>
+            <h1 className="text-3xl font-montserrat font-bold text-bcircle-blue">Welcome Back</h1>
+            <p className="mt-2 text-sm text-gray-600">Sign in to access your CBN account</p>
           </div>
           
           <Form {...form}>

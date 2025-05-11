@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -349,6 +348,26 @@ const DetailsForm: React.FC<DetailsFormProps> = ({ form, onSubmit, onPrev, isLoa
             </div>
           </div>
           
+          {/* Terms & Conditions Summary Box */}
+          <div className="rounded-xl p-6 mb-6 max-h-64 overflow-y-auto shadow-sm border border-gray-200">
+            <h3 className="text-lg font-semibold mb-2 text-gray-800">Terms & Conditions:</h3>
+            <hr className="mb-4 border-gray-300" />
+            <ul className="list-decimal list-inside space-y-2 text-gray-700 text-sm">
+              <li>Membership is open to businesses, professionals, and freelancers in or linked to Chhattisgarh.</li>
+              <li>Annual membership fee is ₹10,000, non-refundable and non-transferable.</li>
+              <li>CBN creates your business profile, which you can later edit and manage.</li>
+              <li>Members must provide accurate and legal business information.</li>
+              <li>Platform is for networking, not for spam, fraud, or misuse.</li>
+              <li>CBN may use your content for listings and promotional purposes.</li>
+              <li>Members must maintain professional conduct at all times.</li>
+              <li>Misuse or misconduct may lead to membership suspension or termination.</li>
+              <li>Your data is kept private and only shared with trusted partners when needed.</li>
+              <li>Features, pricing, or terms may change with prior notice.</li>
+              <li>CBN is not liable for any losses or disputes between members.</li>
+              <li>Legal matters fall under the jurisdiction of courts in Raipur, Chhattisgarh.</li>
+            </ul>
+          </div>
+
           <FormField
             control={form.control}
             name="termsAgreed"

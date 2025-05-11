@@ -58,7 +58,7 @@ const Index = () => {
                 onClick={() => navigate("/register")}
                 className="border-white text-white hover:bg-white hover:text-bcircle-blue"
               >
-                Register Your Business
+               Join Now
               </Button>
             </div>
           </div>

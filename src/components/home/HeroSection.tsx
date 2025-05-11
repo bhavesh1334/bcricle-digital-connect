@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Search, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/contexts/AuthContext';
 
 const HeroSection = () => {
+  const {user}= useAuth()
   return (
     <div className="relative bg-gradient-to-br from-bcircle-blue to-bcircle-blue/90 text-white overflow-hidden">
       {/* Background Pattern */}
@@ -18,11 +20,11 @@ const HeroSection = () => {
           </h1>
           
           <p className="text-lg md:text-xl mb-8 text-gray-100 max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            Find local businesses, services, and professionals in Raipur. The digital backbone for your business networking needs.
+            Find businesses, services, and professionals in Chhattisgarh. The digital backbone for your business networking needs.
           </p>
           
           {/* Search Box */}
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg shadow-lg max-w-2xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.4s' }}>
+          {/* <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg shadow-lg max-w-2xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.4s' }}>
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-grow">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white h-5 w-5" />
@@ -37,15 +39,15 @@ const HeroSection = () => {
               </Button>
             </div>
           </div>
-          
+           */}
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style={{ animationDelay: '0.6s' }}>
-            <Button asChild size="lg" className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white font-medium">
-              <Link to="/register">Register Now</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-              <Link to="/categories">
-                Explore Raipur's Business Circle
+          { !user &&   <Button asChild size="lg" className="bg-bcircle-orange hover:bg-bcircle-orange/90 text-white font-medium">
+              <Link to="/register">Join Now</Link>
+            </Button>}
+            <Button asChild size="lg" variant="outline" className="border-white text-white bg-white/5 hover:bg-white/10">
+              <Link to="/businesses">
+                Explore Chhattisgarh Business Network
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

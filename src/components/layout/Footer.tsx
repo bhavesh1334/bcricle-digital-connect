@@ -11,13 +11,13 @@ const Footer = () => {
           {/* Column 1: About */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center">
-                <span className="text-bcircle-blue font-bold text-xl">B</span>
+              <div className=" rounded-md flex items-center justify-center">
+                <span className="text-white font-bold text-2xl">CBN</span>
               </div>
-              <span className="font-montserrat font-bold text-2xl">
+              {/* <span className="font-montserrat font-bold text-2xl">
                 <span className="text-white">B</span>
                 <span className="text-bcircle-orange">CIRCLE</span>
-              </span>
+              </span> */} 
             </div>
             <p className="text-sm text-gray-300">
               The digital backbone of Chhattisgarh's business community — one connection at a time.
@@ -43,26 +43,26 @@ const Footer = () => {
             <h3 className="font-montserrat font-semibold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li><Link to="/" className="text-gray-300 hover:text-bcircle-orange transition-colors">Home</Link></li>
-              <li><Link to="/categories" className="text-gray-300 hover:text-bcircle-orange transition-colors">Categories</Link></li>
+              <li><Link to="/businesses" className="text-gray-300 hover:text-bcircle-orange transition-colors">Categories</Link></li>
               <li><Link to="/services" className="text-gray-300 hover:text-bcircle-orange transition-colors">Services</Link></li>
               <li><Link to="/about" className="text-gray-300 hover:text-bcircle-orange transition-colors">About Us</Link></li>
               <li><Link to="/contact" className="text-gray-300 hover:text-bcircle-orange transition-colors">Contact Us</Link></li>
-              <li><Link to="/register" className="text-gray-300 hover:text-bcircle-orange transition-colors">Register Your Business</Link></li>
+              <li><Link to="/register" className="text-gray-300 hover:text-bcircle-orange transition-colors">Join Now</Link></li>
             </ul>
           </div>
 
           {/* Column 3: Business Categories */}
-          <div>
+          {/* <div>
             <h3 className="font-montserrat font-semibold text-lg mb-4">Top Categories</h3>
             <ul className="space-y-2">
-              <li><Link to="/categories/web-development" className="text-gray-300 hover:text-bcircle-orange transition-colors">Web Development & IT</Link></li>
-              <li><Link to="/categories/accounting" className="text-gray-300 hover:text-bcircle-orange transition-colors">Accounting Services</Link></li>
-              <li><Link to="/categories/marketing" className="text-gray-300 hover:text-bcircle-orange transition-colors">Digital Marketing</Link></li>
-              <li><Link to="/categories/real-estate" className="text-gray-300 hover:text-bcircle-orange transition-colors">Real Estate & Builders</Link></li>
-              <li><Link to="/categories/healthcare" className="text-gray-300 hover:text-bcircle-orange transition-colors">Healthcare Services</Link></li>
-              <li><Link to="/categories" className="text-bcircle-orange hover:underline transition-colors">View All Categories</Link></li>
+              <li><Link to="/businesses" className="text-gray-300 hover:text-bcircle-orange transition-colors">Web Development & IT</Link></li>
+              <li><Link to="/businesses" className="text-gray-300 hover:text-bcircle-orange transition-colors">Accounting Services</Link></li>
+              <li><Link to="/businesses" className="text-gray-300 hover:text-bcircle-orange transition-colors">Digital Marketing</Link></li>
+              <li><Link to="/businesses" className="text-gray-300 hover:text-bcircle-orange transition-colors">Real Estate & Builders</Link></li>
+              <li><Link to="/businesses" className="text-gray-300 hover:text-bcircle-orange transition-colors">Healthcare Services</Link></li>
+              <li><Link to="/businesses" className="text-bcircle-orange hover:underline transition-colors">View All Categories</Link></li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Column 4: Contact */}
           <div>
@@ -70,7 +70,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <MapPin className="min-w-4 h-4 mt-1" />
-                <span className="text-gray-300">BCIRCLE Office, Civil Lines, Raipur, Chhattisgarh 492001</span>
+                <span className="text-gray-300">CBN Office, Civil Lines, Raipur, Chhattisgarh 492001</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="min-w-4 h-4" />
@@ -85,7 +85,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-700 mt-12 pt-6 text-sm text-gray-400 flex flex-col md:flex-row justify-between items-center">
-          <p>© {new Date().getFullYear()} BCIRCLE. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} CBN. All rights reserved.</p>
           <div className="flex gap-4 mt-4 md:mt-0">
  <Link to="/privacy-policy" className="hover:text-bcircle-orange transition-colors">Privacy Policy</Link>
  <Link to="/terms-of-service" className="hover:text-bcircle-orange transition-colors">Terms of Service</Link>

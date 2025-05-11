@@ -62,10 +62,11 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// BCIRCLE Custom Colors
+				// CBN Custom Colors
 				'bcircle-blue': 'hsl(var(--bcircle-blue))',
 				'bcircle-orange': 'hsl(var(--bcircle-orange))',
-				'bcircle-teal': 'hsl(var(--bcircle-teal))'
+				'bcircle-teal': 'hsl(var(--bcircle-teal))',
+				'bcircle-light-blue': '#bfd7ed'
 			},
 			fontFamily: {
 				montserrat: ['Montserrat', 'sans-serif'],

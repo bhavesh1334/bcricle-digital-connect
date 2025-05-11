@@ -7,7 +7,7 @@ const testimonials = [
     id: 1,
     name: 'Priya Sharma',
     business: 'Devendra Nagar Pharmacy',
-    text: 'Since joining BCIRCLE, my pharmacy has seen a 30% increase in new customers. The direct contact feature has made it so easy for people to reach us for urgent medication queries.',
+    text: 'Since joining CBN, my pharmacy has seen a 30% increase in new customers. The direct contact feature has made it so easy for people to reach us for urgent medication queries.',
     avatar: 'https://randomuser.me/api/portraits/women/54.jpg',
     rating: 5
   },
@@ -15,7 +15,7 @@ const testimonials = [
     id: 2,
     name: 'Rajesh Verma',
     business: 'DigitalEdge Solutions',
-    text: 'As a tech company in Raipur, finding local clients was always challenging until we found BCIRCLE. The platform connects us directly with businesses needing our services.',
+    text: 'As a tech company in Raipur, finding local clients was always challenging until we found CBN. The platform connects us directly with businesses needing our services.',
     avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
     rating: 5
   },
@@ -23,7 +23,7 @@ const testimonials = [
     id: 3,
     name: 'Anjali Patel',
     business: 'Interiors By Design',
-    text: 'BCIRCLE has transformed how we market our interior design services. The categorization is perfect, and we\'ve connected with real clients who found us through the platform.',
+    text: 'CBN has transformed how we market our interior design services. The categorization is perfect, and we\'ve connected with real clients who found us through the platform.',
     avatar: 'https://randomuser.me/api/portraits/women/26.jpg',
     rating: 4
   },
@@ -73,7 +73,7 @@ const Testimonials = () => {
             What Our Members Say
           </h2>
           <p className="text-white/80 max-w-2xl mx-auto">
-            Hear from businesses that have grown their network and customer base using BCIRCLE.
+            Hear from businesses that have grown their network and customer base using CBN.
           </p>
         </div>
 
@@ -122,7 +122,7 @@ const Testimonials = () => {
           {/* Navigation Controls */}
           <button
             onClick={prevTestimonial}
-            className="absolute top-1/2 -left-4 -translate-y-1/2 bg-white/10 text-white p-2 rounded-full hover:bg-white/20 transition-colors"
+            className="absolute z-50 top-1/2 -left-4 -translate-y-1/2 bg-white/10 text-white p-2 rounded-full hover:bg-white/20 transition-colors"
             aria-label="Previous testimonial"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -130,7 +130,7 @@ const Testimonials = () => {
 
           <button
             onClick={nextTestimonial}
-            className="absolute top-1/2 -right-4 -translate-y-1/2 bg-white/10 text-white p-2 rounded-full hover:bg-white/20 transition-colors"
+            className="absolute z-50 top-1/2 -right-4 -translate-y-1/2 bg-white/10 text-white p-2 rounded-full hover:bg-white/20 transition-colors"
             aria-label="Next testimonial"
           >
             <ChevronRight className="h-6 w-6" />

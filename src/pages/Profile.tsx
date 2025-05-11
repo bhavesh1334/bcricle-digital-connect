@@ -1,14 +1,14 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Building, Mail, Phone, User, Briefcase, Upload, Camera, Image } from 'lucide-react';
+import { Building, Mail, Phone, User, Briefcase, Upload, Camera, Image, AlertCircle, CheckCircle2, MessageSquare } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface Business {
   id: string;
@@ -20,6 +20,7 @@ interface Business {
   whatsapp: string;
   logo_url: string | null;
   cover_image: string | null;
+  payment_status: 'PENDING' | 'DONE' | null;
 }
 
 const Profile = () => {
@@ -131,6 +132,16 @@ const Profile = () => {
         .eq('id', user.id);
 
       if (updateError) throw updateError;
+
+      // Update user metadata with the new avatar URL
+      const { error: metadataError } = await supabase.auth.updateUser({
+        data: {
+          avatar_url: publicUrl,
+          profile_image_url: publicUrl
+        }
+      });
+
+      if (metadataError) throw metadataError;
 
       // Update local profile state
       setProfile(prev => ({ ...prev, avatar_url: publicUrl }));
@@ -323,6 +334,41 @@ const Profile = () => {
                       <p className="text-sm text-gray-500">Description</p>
                       <p className="line-clamp-3">{business.description}</p>
                     </div>
+
+                    <div>
+                      <p className="text-sm text-gray-500">Payment Status</p>
+                      {business.payment_status === 'DONE' ? (
+                        <div className="flex items-center text-green-600">
+                          <CheckCircle2 className="h-4 w-4 mr-2" />
+                          <span>Payment Completed</span>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="flex items-center text-amber-600">
+                            <AlertCircle className="h-4 w-4 mr-2" />
+                            <span>Payment Pending</span>
+                          </div>
+                          <Alert className="bg-amber-50 border-amber-200">
+                            <AlertDescription className="text-amber-800">
+                              To complete your business listing, please connect with us on WhatsApp to process the payment.
+                            </AlertDescription>
+                          </Alert>
+                          <Button
+                            asChild
+                            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium flex items-center justify-center gap-2 py-2.5 transition-all duration-200 hover:scale-[1.02] shadow-sm"
+                          >
+                            <a
+                              href={`https://wa.me/919876543210?text=Hi, I would like to complete the payment for my business listing: ${business.name}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <MessageSquare className="h-4 w-4" />
+                              <span>Connect on WhatsApp</span>
+                            </a>
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                     
                     <div className="pt-2">
                       <Link to={`/business/${business.id}`}>
@@ -336,9 +382,9 @@ const Profile = () => {
                   <div className="bg-blue-50 border border-blue-100 rounded-lg p-6 text-center">
                     <h3 className="font-semibold text-blue-800 mb-2">No Business Registered Yet</h3>
                     <p className="text-blue-700 mb-4">Complete your business registration to join our network and grow your business.</p>
-                    <Link to="/complete-registration">
+                    <Link to="/register">
                       <Button className="bg-bcircle-blue hover:bg-bcircle-blue/90">
-                        Complete Registration
+                        Join Now
                       </Button>
                     </Link>
                   </div>

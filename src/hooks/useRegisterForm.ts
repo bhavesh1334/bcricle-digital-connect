@@ -19,6 +19,7 @@ export const useRegisterForm = () => {
   const [formData, setFormData] = useState<Partial<RegisterFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false); // Added state for verification status
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const navigate = useNavigate();
 
   // Form for step 1
@@ -80,51 +81,67 @@ export const useRegisterForm = () => {
   // Function to handle moving to the next step based on current step
   const nextStep = async () => {
     if (step === 1) {
-      // Validate step 1
-      const valid = await form1.trigger();
-      if (valid) {
-        const step1Data = form1.getValues();
-        setFormData(prev => ({ ...prev, ...step1Data })); // Preserve existing data
+      try {
+        // Validate step 1
+        const valid = await form1.trigger();
+        console.log('Form validation result:', valid);
+        
+        if (valid) {
+          const step1Data = form1.getValues();
+          console.log('Form data:', step1Data);
+          setFormData(prev => ({ ...prev, ...step1Data }));
 
-        setIsLoading(true);
-        try {
-          const { error: signUpError } = await supabase.auth.signUp({
-            email: step1Data.email,
-            password: step1Data.password,
-            options: {
-              emailRedirectTo: 'https://8080-firebase-bcricle-digital-connect-1746687994284.cluster-ys234awlzbhwoxmkkse6qo3fz6.cloudworkstations.dev/verify-email',
-              data: {
-                first_name: step1Data.firstName,
-                last_name: step1Data.lastName,
-                phone: step1Data.phone,
-                designation: step1Data.designation || ''
+          setIsLoading(true);
+          try {
+            console.log('Attempting to sign up with Supabase...');
+            const { error: signUpError } = await supabase.auth.signUp({
+              email: step1Data.email,
+              password: step1Data.password,
+              options: {
+                emailRedirectTo: `${window.location.origin}/verify-email`,
+                data: {
+                  first_name: step1Data.firstName,
+                  last_name: step1Data.lastName,
+                  phone: step1Data.phone,
+                  designation: step1Data.designation || ''
+                }
               }
-            }
-          });
-          if (signUpError) {
-            if (signUpError.message.includes('already registered')) {
-              throw new Error("This email is already registered. Please try logging in or use a different email.");
-            }
-            throw signUpError;
-          }
-          toast({
-            title: "Account Created!",
-            description: "Please check your email to verify your account before proceeding."
-          });
-          
-          // Modified: Navigate to registration-success after step 1
-          navigate('/registration-success');
+            });
 
-        } catch (error: any) {
-          console.error('Signup error:', error);
-          toast({
-            variant: "destructive",
-            title: "Registration Failed",
-            description: error.message || "An error occurred during signup. Please try again."
-          });
-        } finally {
-          setIsLoading(false);
+            if (signUpError) {
+              console.error('Signup error:', signUpError);
+              if (signUpError.message.includes('already registered')) {
+                throw new Error("This email is already registered. Please try logging in or use a different email.");
+              }
+              throw signUpError;
+            }
+
+            console.log('Signup successful, showing toast and moving to next step');
+            toast({
+              title: "Account Created!",
+              description: "Please check your email to verify your account before proceeding."
+            });
+          navigate("/registration-success")
+          } catch (error: any) {
+            console.error('Error during signup:', error);
+            toast({
+              variant: "destructive",
+              title: "Registration Failed",
+              description: error.message || "An error occurred during signup. Please try again."
+            });
+          } finally {
+            setIsLoading(false);
+          }
+        } else {
+          console.log('Form validation failed:', form1.formState.errors);
         }
+      } catch (error) {
+        console.error('Error in nextStep:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "An unexpected error occurred. Please try again."
+        });
       }
     } else if (step === 2) {
       const valid = await form2.trigger();
@@ -183,6 +200,8 @@ export const useRegisterForm = () => {
         let coverImageUrl = null;
         if (completeFormData.logo instanceof File) {
           console.log("Uploading business logo...");
+          logoUrl = await uploadFile(completeFormData.logo, 'business-images', 'logos');
+          console.log("Logo uploaded:", logoUrl);
         }
         
         // 4. Upload cover image if provided
@@ -226,7 +245,10 @@ export const useRegisterForm = () => {
         
         const { data: insertedBusiness, error: businessError } = await supabase
           .from('businesses')
-          .insert(businessData)
+          .insert({
+            ...businessData,
+            payment_status: 'PENDING' // Fix payment_status to be the correct enum value
+          })
           .select('id')
           .single();
 
@@ -250,39 +272,44 @@ export const useRegisterForm = () => {
         // 6. Upload business photos if provided
         if (Array.isArray(completeFormData.businessPhotos) && completeFormData.businessPhotos.length > 0 && insertedBusiness) {
           console.log(`Uploading ${completeFormData.businessPhotos.length} business photos`);
-          
+          const failedUploads: { index: number, error: any }[] = [];
           const photoPromises = completeFormData.businessPhotos.map(async (photo: File, index: number) => {
-            const photoUrl = await uploadFile(photo, 'business-images', `photos/${insertedBusiness.id}`);
-            console.log(`Photo ${index + 1} uploaded:`, photoUrl);
-            
-            if (photoUrl) {
-              const { error: photoError } = await supabase
-                .from('business_photos')
-                .insert({
-                  business_id: insertedBusiness.id,
-                  photo_url: photoUrl
-                });
-                
-              if (photoError) {
-                console.error(`Error inserting photo ${index + 1}:`, photoError);
+            try {
+              const photoUrl = await uploadFile(photo, 'business-images', `photos/${insertedBusiness.id}`);
+              console.log(`Photo ${index + 1} uploaded:`, photoUrl);
+              if (photoUrl) {
+                const { error: photoError } = await supabase
+                  .from('business_photos')
+                  .insert({
+                    business_id: insertedBusiness.id,
+                    photo_url: photoUrl
+                  });
+                if (photoError) {
+                  console.error(`Error inserting photo ${index + 1}:`, photoError);
+                  failedUploads.push({ index, error: photoError });
+                }
+                return photoUrl;
+              } else {
+                failedUploads.push({ index, error: 'No photoUrl returned from uploadFile' });
               }
-              
-              return photoUrl;
+            } catch (err) {
+              console.error(`Error uploading photo ${index + 1}:`, err);
+              failedUploads.push({ index, error: err });
             }
             return null;
           });
-          
           await Promise.all(photoPromises);
-          console.log("All photos processed");
+          if (failedUploads.length > 0) {
+            console.warn('Some business photos failed to upload or insert:', failedUploads);
+          } else {
+            console.log('All business photos uploaded and inserted successfully.');
+          }
         }
         
-        // 7. Display registration success and verification message
-        toast({
-          title: "Registration successful!",
-          description: "Your account has been created. You will receive an email to verify your account and activate your business listing."
-        });        
-        navigate('/registration-success');
-      } catch (error: any) { // Catching any errors thrown during the process
+        // Show success dialog instead of navigating
+        setShowSuccessDialog(true);
+        
+      } catch (error: any) {
         console.error('Registration error:', error);
         toast({
           variant: "destructive",
@@ -302,6 +329,8 @@ export const useRegisterForm = () => {
     form3,
     isLoading,
     isVerified,
+    showSuccessDialog,
+    setShowSuccessDialog,
     nextStep,
     prevStep,
     onSubmit

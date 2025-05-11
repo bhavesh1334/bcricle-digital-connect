@@ -18,9 +18,9 @@ const RegistrationSuccess = () => {
                 </div>
               </div>
               
-              <h1 className="mt-4 text-3xl font-montserrat font-bold text-gray-900">Registration Successful!</h1>
+              <h1 className="mt-4 text-3xl font-montserrat font-bold text-gray-900">Verifiy Your Email</h1>
               <p className="mt-2 text-lg text-gray-600">
-                Thank you for registering with Business Circle.
+                Thank you for registering with CBN.
               </p>
               
               <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-100">
@@ -44,11 +44,11 @@ const RegistrationSuccess = () => {
                     Resend Verification Email
                   </Button>
                   
-                  <Link to="/login">
+                  {/* <Link to="/login">
                     <Button className="w-full sm:w-auto bg-bcircle-blue hover:bg-bcircle-blue/90">
                       Go to Login
                     </Button>
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </div>

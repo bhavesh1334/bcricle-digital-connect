@@ -1,17 +1,17 @@
-
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { businessData, Business } from '@/data/businessData';
+import { ArrowRight } from 'lucide-react';
+import BusinessCard, { Business } from '@/components/common/BusinessCard';
 
 interface RelatedBusinessesProps {
   currentCategory: string;
-  currentId: number;
+  currentId: string;
+  businesses: Business[];
 }
 
-const RelatedBusinesses: React.FC<RelatedBusinessesProps> = ({ currentCategory, currentId }) => {
+const RelatedBusinesses: React.FC<RelatedBusinessesProps> = ({ currentCategory, currentId, businesses }) => {
   // Find related businesses in the same category, excluding the current business
-  const relatedBusinesses = businessData
+  const relatedBusinesses = businesses
     .filter(business => business.category === currentCategory && business.id !== currentId)
     .slice(0, 3);
   
@@ -29,42 +29,23 @@ const RelatedBusinesses: React.FC<RelatedBusinessesProps> = ({ currentCategory, 
         </Link>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {relatedBusinesses.map((business) => (
-          <BusinessCard key={business.id} business={business} />
+          <BusinessCard
+            key={business.id}
+            id={business.id}
+            name={business.name}
+            category={business.category}
+            address={business.address}
+            cover_image={business.cover_image}
+            logo_url={business.logo_url}
+            description={business.description}
+            verified={business.verified}
+            whatsapp={business.whatsapp}
+          />
         ))}
       </div>
     </div>
-  );
-};
-
-const BusinessCard: React.FC<{ business: Business }> = ({ business }) => {
-  return (
-    <Link to={`/business/${business.slug}`} className="group">
-      <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full">
-        <div className="h-56 overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 z-10"></div>
-          <img 
-            src={business.imageUrl} 
-            alt={business.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-          
-          {/* Content overlay on the image */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 z-20 text-white">
-            <h3 className="font-semibold text-lg mb-1">{business.name}</h3>
-            <p className="text-sm text-white/90 line-clamp-2">{business.description}</p>
-          </div>
-        </div>
-        
-        <div className="p-4 bg-white">
-          <div className="flex justify-between items-center">
-            <span className="text-sm bg-bcircle-blue/10 text-bcircle-blue px-2 py-0.5 rounded-md">{business.category}</span>
-            <span className="text-bcircle-blue text-sm group-hover:underline">View Details</span>
-          </div>
-        </div>
-      </div>
-    </Link>
   );
 };
 

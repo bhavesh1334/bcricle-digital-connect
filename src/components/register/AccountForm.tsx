@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,13 +11,15 @@ import {
 } from '@/components/ui/form';
 import { AccountFormData } from '@/schemas/registerSchema';
 import { UseFormReturn } from 'react-hook-form';
+import { Loader2 } from 'lucide-react';
 
 interface AccountFormProps {
   form: UseFormReturn<AccountFormData>;
   onNext: () => void;
+  isLoading?: boolean;
 }
 
-const AccountForm: React.FC<AccountFormProps> = ({ form, onNext }) => {
+const AccountForm: React.FC<AccountFormProps> = ({ form, onNext, isLoading = false }) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onNext)} className="space-y-6">
@@ -31,7 +32,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ form, onNext }) => {
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} disabled={isLoading} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -45,7 +46,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ form, onNext }) => {
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} disabled={isLoading} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -60,7 +61,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ form, onNext }) => {
               <FormItem>
                 <FormLabel>Email Address</FormLabel>
                 <FormControl>
-                  <Input {...field} type="email" />
+                  <Input {...field} type="email" disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -74,7 +75,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ form, onNext }) => {
               <FormItem>
                 <FormLabel>Designation (Optional)</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -88,7 +89,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ form, onNext }) => {
               <FormItem>
                 <FormLabel>Phone Number</FormLabel>
                 <FormControl>
-                  <Input {...field} type="tel" />
+                  <Input {...field} type="tel" disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -102,7 +103,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ form, onNext }) => {
               <FormItem>
                 <FormLabel>Create Password</FormLabel>
                 <FormControl>
-                  <Input {...field} type="password" />
+                  <Input {...field} type="password" disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -116,7 +117,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ form, onNext }) => {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input {...field} type="password" />
+                  <Input {...field} type="password" disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -125,8 +126,19 @@ const AccountForm: React.FC<AccountFormProps> = ({ form, onNext }) => {
         </div>
         
         <div className="flex justify-end">
-          <Button type="submit" className="bg-bcircle-blue hover:bg-bcircle-blue/90">
-            Next Step
+          <Button 
+            type="submit" 
+            className="bg-bcircle-blue hover:bg-bcircle-blue/90"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing up...
+              </>
+            ) : (
+              'Sign Up'
+            )}
           </Button>
         </div>
       </form>

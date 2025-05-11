@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +24,7 @@ import Profile from "./pages/Profile";
 import Services from "./pages/Services";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 
 const queryClient = new QueryClient();
 
@@ -47,8 +47,9 @@ const App = () => (
             <Route path="/registration-success" element={<RegistrationSuccess />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/services" element={<Services />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/terms-of-service" element={<TermsAndConditions />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             
             {/* Protected Routes (require authentication) */}
             <Route path="/categories" element={<AuthGuard><Categories /></AuthGuard>} />
