@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
@@ -7,6 +6,7 @@ import ProgressSteps from '@/components/register/ProgressSteps';
 import AccountForm from '@/components/register/AccountForm';
 import BusinessForm from '@/components/register/BusinessForm';
 import DetailsForm from '@/components/register/DetailsForm';
+import RegistrationSuccessDialog from '@/components/register/RegistrationSuccessDialog';
 
 const Register = () => {
   const {
@@ -17,7 +17,9 @@ const Register = () => {
     isLoading,
     nextStep,
     prevStep,
-    onSubmit
+    onSubmit,
+    showSuccessDialog,
+    setShowSuccessDialog
   } = useRegisterForm();
   
   return (
@@ -33,7 +35,7 @@ const Register = () => {
             <ProgressSteps currentStep={step} />
             
             {step === 1 && (
-              <AccountForm form={form1} onNext={nextStep} />
+              <AccountForm form={form1} onNext={nextStep} isLoading={isLoading} />
             )}
             
             {step === 2 && (
@@ -64,6 +66,11 @@ const Register = () => {
           </div>
         </div>
       </div>
+
+      <RegistrationSuccessDialog 
+        isOpen={showSuccessDialog}
+        onClose={() => setShowSuccessDialog(false)}
+      />
     </MainLayout>
   );
 };

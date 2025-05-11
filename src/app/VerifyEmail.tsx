@@ -13,6 +13,7 @@ const VerifyEmail = () => {
       const params = new URLSearchParams(hash);
       const access_token = params.get('access_token');
       const refresh_token = params.get('refresh_token');
+      console.log(access_token, refresh_token, "AT RT")
 
       if (!access_token || !refresh_token) {
         toast({

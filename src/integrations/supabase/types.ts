@@ -52,7 +52,7 @@ export type Database = {
           logo_url: string | null
           name: string
           owner_id: string
-          payment_status: string | null
+          payment_status: 'PENDING' | 'DONE' | null
           pincode: string | null
           state: string
           updated_at: string | null
@@ -73,7 +73,7 @@ export type Database = {
           logo_url?: string | null
           name: string
           owner_id: string
-          payment_status?: string | null
+          payment_status?: 'PENDING' | 'DONE' | null
           pincode?: string | null
           state: string
           updated_at?: string | null
@@ -94,7 +94,7 @@ export type Database = {
           logo_url?: string | null
           name?: string
           owner_id?: string
-          payment_status?: string | null
+          payment_status?: 'PENDING' | 'DONE' | null
           pincode?: string | null
           state?: string
           updated_at?: string | null
@@ -153,7 +153,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      payment_status: 'PENDING' | 'DONE'
     }
     CompositeTypes: {
       [_ in never]: never

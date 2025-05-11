@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Menu, X, LogOut } from 'lucide-react';
@@ -16,12 +16,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
+  let debounceTimeout: NodeJS.Timeout;
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -72,6 +79,46 @@ const Header = () => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
+  // Debounced search effect
+  useEffect(() => {
+    if (!searchTerm) {
+      setSearchResults([]);
+      setShowDropdown(false);
+      return;
+    }
+    setIsSearching(true);
+    setShowDropdown(true);
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(async () => {
+      const { data, error } = await supabase
+        .from('businesses')
+        .select('id, name, category, city, state, address, logo_url, payment_status')
+        .or(`name.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%,city.ilike.%${searchTerm}%,state.ilike.%${searchTerm}%,address.ilike.%${searchTerm}%`)
+        .eq('payment_status', 'DONE')
+        .limit(8);
+      if (!error && data) {
+        setSearchResults(data);
+      } else {
+        setSearchResults([]);
+      }
+      setIsSearching(false);
+    }, 350);
+    return () => clearTimeout(debounceTimeout);
+  }, [searchTerm]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!showDropdown) return;
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.header-search-dropdown') && !target.closest('.header-search-input')) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showDropdown]);
+
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-border/40 shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -92,14 +139,52 @@ const Header = () => {
         </Link>
 
         {/* Search Bar - Hidden on Mobile */}
-        <div className="hidden md:flex flex-1 max-w-md mx-4">
+        <div className="hidden md:flex flex-1 max-w-md mx-4 relative">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input 
               type="search" 
               placeholder="Search businesses, services..." 
-              className="pl-10 pr-4 w-full rounded-full border-bcircle-blue/20 focus:border-bcircle-blue"
+              className="pl-10 pr-4 w-full rounded-full border-bcircle-blue/20 focus:border-bcircle-blue header-search-input"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              onFocus={() => searchTerm && setShowDropdown(true)}
+              autoComplete="off"
             />
+            {/* Dropdown */}
+            {showDropdown && (
+              <div className="header-search-dropdown absolute top-full left-0 w-full bg-white rounded-xl shadow-lg border border-gray-200 z-50 max-h-80 overflow-y-auto animate-fade-in">
+                {isSearching ? (
+                  <div className="p-4 text-center text-gray-500 text-sm">Searching...</div>
+                ) : searchResults.length === 0 ? (
+                  <div className="p-4 text-center text-gray-500 text-sm">No businesses found.</div>
+                ) : (
+                  <ul className="divide-y divide-gray-100">
+                    {searchResults.map(business => (
+                      <li
+                        key={business.id}
+                        className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-bcircle-blue/10 transition"
+                        onClick={() => {
+                          setShowDropdown(false);
+                          setSearchTerm('');
+                          navigate(`/business/${business.id}`);
+                        }}
+                      >
+                        <img
+                          src={business.logo_url || '/cbn-logo.png'}
+                          alt={business.name}
+                          className="h-10 w-10 rounded-md object-cover border border-gray-200 bg-white"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-gray-800 truncate">{business.name}</div>
+                          <div className="text-xs text-gray-500 truncate">{business.category} • {business.city}{business.state ? `, ${business.state}` : ''}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

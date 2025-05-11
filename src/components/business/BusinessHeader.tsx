@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ArrowLeft, MapPin, Star, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -30,7 +29,7 @@ const BusinessHeader: React.FC<BusinessHeaderProps> = ({ business }) => {
             className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-md text-bcircle-blue hover:bg-white transition-all shadow-md"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span className="text-sm font-medium">Back to Directory</span>
+            <span className="text-sm font-medium capitalize">Back</span>
           </Link>
         </div>
         
@@ -38,7 +37,7 @@ const BusinessHeader: React.FC<BusinessHeaderProps> = ({ business }) => {
         {business.verified && (
           <div className="absolute top-6 right-6 z-20 flex items-center gap-1.5 bg-green-500/90 backdrop-blur-sm text-white px-3 py-1.5 rounded-md shadow-md">
             <CheckCircle className="h-4 w-4" />
-            <span className="text-xs font-medium">Verified</span>
+            <span className="text-xs font-medium capitalize">Verified</span>
           </div>
         )}
       </div>
@@ -67,24 +66,22 @@ const BusinessHeader: React.FC<BusinessHeaderProps> = ({ business }) => {
             
             {/* Business Info */}
             <div className="flex-grow">
-              <h1 className="text-3xl font-montserrat font-bold text-bcircle-blue">
+              <h1 className="text-3xl font-montserrat font-bold text-bcircle-blue capitalize">
                 {business.name}
               </h1>
               
               <div className="flex items-center gap-2 mt-2">
-                <span className="bg-bcircle-blue/10 text-bcircle-blue px-3 py-1 rounded-full text-sm font-medium">
+                <span className="bg-bcircle-blue/10 text-bcircle-blue px-3 py-1 rounded-full text-sm font-medium capitalize">
                   {business.category}
                 </span>
-                
-             
               </div>
               
               <div className="flex items-center gap-1.5 mt-3 text-gray-600">
                 <MapPin className="h-4 w-4" />
-                <span className="text-sm">{business.location}</span>
+                <span className="text-sm capitalize">{business.location}</span>
               </div>
               
-              <p className="mt-3 text-sm text-gray-600 italic max-w-2xl">
+              <p className="mt-3 text-sm text-gray-600 italic max-w-2xl capitalize">
                 {business.tagline || business.description}
               </p>
             </div>

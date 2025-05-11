@@ -20,15 +20,15 @@ const BusinessOwner: React.FC<BusinessOwnerProps> = ({ owner }) => {
       <div className="flex items-start gap-4">
         <Avatar className="h-20 w-20 border-2 border-white shadow-md">
           <AvatarImage className='' src={owner.imageUrl} alt={owner.name} />
-          <AvatarFallback className="bg-bcircle-blue text-white text-xl">{owner.name.charAt(0)}</AvatarFallback>
+          <AvatarFallback className="bg-bcircle-blue text-white text-xl uppercase">{owner.name.charAt(0)}</AvatarFallback>
         </Avatar>
         
         <div className="flex-1">
-          <h3 className="text-lg font-bold text-bcircle-blue">{owner.name}</h3>
-          <p className="text-xs bg-bcircle-blue/10 text-bcircle-blue px-2 py-0.5 rounded-full inline-block mb-2">{owner.position}</p>
+          <h3 className="text-lg font-bold text-bcircle-blue capitalize">{owner.name}</h3>
+          <p className="text-xs bg-bcircle-blue/10 text-bcircle-blue px-2 py-0.5 rounded-full inline-block mb-2 uppercase">{owner.position}</p>
           
           <div className="relative  mb-4">
-            <p className={`text-sm text-gray-600 leading-relaxed ${!isExpanded ? 'line-clamp-2' : ''}`}>
+            <p className={`text-sm text-gray-600 capitalize leading-relaxed ${!isExpanded ? 'line-clamp-2' : ''}`}>
               {owner.bio}
             </p>
             {owner.bio.length > 120 && (

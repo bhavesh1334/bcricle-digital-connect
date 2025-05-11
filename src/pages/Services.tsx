@@ -65,14 +65,14 @@ const ServiceCard = ({ service }) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-gray-500" />
             <span className="text-sm">{service.duration}</span>
           </div>
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-gray-500" />
             <span className="text-sm font-medium">{service.pricing}</span>
-          </div>
+          </div> */}
           <Separator />
           <div>
             <h4 className="text-sm font-medium mb-2">What's included:</h4>

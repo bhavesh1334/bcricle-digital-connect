@@ -14,7 +14,7 @@ interface CategoryCardProps {
 const CategoryCard: React.FC<CategoryCardProps> = ({ icon, title, count, slug }) => {
   return (
     <Link 
-      to={`/categories/${slug}`}
+      to={`/businesses`}
       className="flex flex-col items-center p-6 bg-white rounded-lg border border-border hover-lift card-hover group"
     >
       <div className="w-16 h-16 rounded-full bg-bcircle-blue/10 flex items-center justify-center text-bcircle-blue mb-4 group-hover:bg-bcircle-blue group-hover:text-white transition-colors">

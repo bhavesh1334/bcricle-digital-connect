@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export async function signUp(email: string, password: string, metadata: Record<string, any>) {
@@ -19,7 +18,11 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signOut() {
-  return supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
+  if (!error) {
+    window.location.href = '/'; // Force a full page reload and redirect to home
+  }
+  return { error };
 }
 
 export async function resetPasswordRequest(email: string) {
