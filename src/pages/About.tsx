@@ -4,41 +4,41 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import AdSlider from '@/components/common/AdSlider';
-
+export const adSlides = [
+  {
+    id: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d',
+    alt: 'Digital Marketing Services',
+    targetUrl: '#ad1'
+  },
+  {
+    id: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72',
+    alt: 'Premium Office Space for Rent',
+    targetUrl: '#ad2'
+  },
+  {
+    id: 3,
+    imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7',
+    alt: 'Business Conference 2023',
+    targetUrl: '#ad3'
+  },
+  {
+    id: 4,
+    imageUrl: 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6',
+    alt: 'Financial Services',
+    targetUrl: '#ad4'
+  },
+  {
+    id: 5,
+    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3',
+    alt: 'IT Consulting',
+    targetUrl: '#ad5'
+  }
+];
 const About = () => {
   // Mock data for ad slider
-  const adSlides = [
-    {
-      id: 1,
-      imageUrl: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d',
-      alt: 'Digital Marketing Services',
-      targetUrl: '#ad1'
-    },
-    {
-      id: 2,
-      imageUrl: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72',
-      alt: 'Premium Office Space for Rent',
-      targetUrl: '#ad2'
-    },
-    {
-      id: 3,
-      imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7',
-      alt: 'Business Conference 2023',
-      targetUrl: '#ad3'
-    },
-    {
-      id: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6',
-      alt: 'Financial Services',
-      targetUrl: '#ad4'
-    },
-    {
-      id: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3',
-      alt: 'IT Consulting',
-      targetUrl: '#ad5'
-    }
-  ];
+
 
   return (
     <MainLayout> 

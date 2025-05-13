@@ -5,6 +5,8 @@ import { Building, ShoppingBag, Clock, DollarSign } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import AdSlider from '@/components/common/AdSlider';
+import { adSlides } from './About';
 
 // Sample services data
 const serviceCategories = [
@@ -119,7 +121,9 @@ const Services = () => {
               Discover our comprehensive range of business services designed to help you succeed
             </p>
           </div>
-          
+          <section className="py-12 bg-gray-50">
+            <AdSlider slides={adSlides} size="medium" />
+          </section>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 md:p-8">
             {serviceCategories.map((category) => (
               <React.Fragment key={category.id}>
@@ -127,7 +131,7 @@ const Services = () => {
                 {category.id < serviceCategories.length && <Separator className="my-8" />}
               </React.Fragment>
             ))}
-            
+
             <div className="mt-12 text-center">
               <Badge variant="outline" className="mb-4 px-3 py-1 text-sm bg-blue-50 text-bcircle-blue border-blue-200">
                 <Building className="h-4 w-4 mr-1" />

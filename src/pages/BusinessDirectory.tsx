@@ -254,7 +254,7 @@ const BusinessDirectory = () => {
               {/* Search Bar */}
               <div className="mt-10 bg-white/10 backdrop-blur-md rounded-lg p-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
                 <div className="flex flex-col md:flex-row gap-3">
-                  <div className="relative flex-grow">
+                  <div className="relative flex-grow w-full">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white h-5 w-5" />
                     <Input
                       type="search"
@@ -384,7 +384,7 @@ const BusinessDirectory = () => {
             {/* Search Bar */}
             <div className="mt-10 bg-white/10 backdrop-blur-md rounded-lg p-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
               <div className="flex flex-col md:flex-row gap-3">
-                <div className="relative flex-grow">
+                <div className="relative flex-grow w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white h-5 w-5" />
                   <Input
                     type="search"
