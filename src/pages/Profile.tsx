@@ -9,19 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
-interface Business {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  city: string;
-  state: string;
-  whatsapp: string;
-  logo_url: string | null;
-  cover_image: string | null;
-  payment_status: 'PENDING' | 'DONE' | null;
-}
+import ReferralSection from '@/components/profile/ReferralSection';
+import { Business } from '@/types/business';
 
 const Profile = () => {
   const { user } = useAuth();
@@ -29,6 +18,7 @@ const Profile = () => {
   const [business, setBusiness] = useState<Business | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [referralCount, setReferralCount] = useState(0);
   const { toast } = useToast();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -57,8 +47,10 @@ const Profile = () => {
           .eq('owner_id', user.id)
           .maybeSingle();
 
-        if (!businessError) {
-          setBusiness(businessData);
+        if (!businessError && businessData) {
+          const typedBusinessData = businessData as Business;
+          setBusiness(typedBusinessData);
+          setReferralCount(typedBusinessData.referral_count ?? 0);  // Use nullish coalescing for better type safety
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -390,6 +382,14 @@ const Profile = () => {
                   </div>
                 )}
               </div>
+              {business && (
+                <div className="mt-6">
+                  <ReferralSection
+                    referralCount={referralCount}
+                    referralLink={`${window.location.origin}/register?ref=${business.id}`}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

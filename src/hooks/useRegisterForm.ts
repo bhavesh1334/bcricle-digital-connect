@@ -21,6 +21,8 @@ export const useRegisterForm = () => {
   const [isVerified, setIsVerified] = useState(false); // Added state for verification status
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const navigate = useNavigate();
+  const searchParams = new URLSearchParams(window.location.search);
+  const referrerId = searchParams.get('ref');
 
   // Form for step 1
   const form1 = useForm<AccountFormData>({
@@ -98,7 +100,7 @@ export const useRegisterForm = () => {
               email: step1Data.email,
               password: step1Data.password,
               options: {
-                emailRedirectTo: `${window.location.origin}/verify-email`,
+                emailRedirectTo: referrerId? `${window.location.origin}/register?ref=${referrerId}`:`${window.location.origin}/verify-email`,
                 data: {
                   first_name: step1Data.firstName,
                   last_name: step1Data.lastName,
@@ -216,58 +218,49 @@ export const useRegisterForm = () => {
         console.log("Inserting business data with authenticated user ID:", currentUserId);
         console.log("Session user ID for insertion:", session.user.id);
         
+       
+
         const businessData = {
-          owner_id: currentUserId, // Corrected line: use currentUserId
+          owner_id: currentUserId,
           name: completeFormData.businessName as string,
           description: completeFormData.description as string,
           category: completeFormData.category as string,
-          address: completeFormData.address || null,
+          address: completeFormData.address || undefined,
           city: completeFormData.city as string,
           state: completeFormData.state as string,
-          pincode: completeFormData.pincode || null,
-          website: completeFormData.website || null,
-          instagram_link: completeFormData.instagramLink || null,
+          pincode: completeFormData.pincode || undefined,
+          website: completeFormData.website || undefined,
+          instagram_link: completeFormData.instagramLink || undefined,
           whatsapp: completeFormData.whatsapp as string,
-          founded: completeFormData.founded || null,
+          founded: completeFormData.founded || undefined,
           logo_url: logoUrl,
           cover_image: coverImageUrl,
           verified: false,
-          payment_status: 'pending'
+          payment_status: 'PENDING' as const
+          // referral fields will be added after migration
         };
-        
-        console.log("Business data for insertion:", businessData);
-        
-        // Add explicit check to ensure owner_id matches the current authenticated user ID
-        if (businessData.owner_id !== currentUserId) {
-           console.error("Owner ID mismatch:", { provided: businessData.owner_id, actual: currentUserId });
-           throw new Error("Authentication mismatch. Cannot create business with incorrect owner ID.");
-        }
-        
+
+        // Create business
         const { data: insertedBusiness, error: businessError } = await supabase
           .from('businesses')
-          .insert({
-            ...businessData,
-            payment_status: 'PENDING' // Fix payment_status to be the correct enum value
-          })
-          .select('id')
+          .insert(businessData)
+          .select()
           .single();
 
         if (businessError) {
-          console.error('Business insertion error details:', businessError);
-          
-          // Try to get more info about the error
-          console.error('Error code:', businessError.code);
-          console.error('Error message:', businessError.message);
-          console.error('Error details:', businessError.details);
-          
-          // Check session status
-          const sessionStatus = await supabase.auth.getSession();
-          console.error('Current session status:', sessionStatus.data.session ? 'Active' : 'No session');
-          
-          throw businessError; // Rethrow business insertion errors
+          console.error('Error creating business:', businessError);
+          throw businessError;
         }
         
         console.log("Successfully created business with ID:", insertedBusiness?.id);
+
+        // If there's a referrer, increment their referral count
+        if (referrerId) {
+          const { error: referralError } = await supabase.rpc('increment_referral_count', { business_id: referrerId });
+          if (referralError) {
+            console.error('Error incrementing referral count:', referralError);
+          }
+        }
         
         // 6. Upload business photos if provided
         if (Array.isArray(completeFormData.businessPhotos) && completeFormData.businessPhotos.length > 0 && insertedBusiness) {

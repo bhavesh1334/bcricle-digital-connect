@@ -6,6 +6,8 @@ import { useToast } from '@/hooks/use-toast';
 const VerifyEmail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const searchParams = new URLSearchParams(window.location.search);
+  const referrerId = searchParams.get('ref');
 
   useEffect(() => {
     const verifyFromHash = async () => {
@@ -37,8 +39,11 @@ const VerifyEmail = () => {
           title: 'Email Verified',
           description: 'You have been successfully signed in.',
         });
-
-        navigate('/register'); // or /dashboard, based on your flow
+        if (referrerId) {
+          navigate(`/register?ref=${referrerId}`);
+        } else {
+          navigate('/register');
+        }
       } catch (error: any) {
         toast({
           variant: 'destructive',
@@ -50,7 +55,7 @@ const VerifyEmail = () => {
     };
 
     verifyFromHash();
-  }, [navigate, toast]);
+  }, [navigate, referrerId]);
 
   return (
     <div className='h-screen w-screen flex flex-col items-center justify-center'>
