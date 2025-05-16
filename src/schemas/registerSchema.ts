@@ -21,7 +21,7 @@ export const accountSchema = z.object({
 // Step 2 schema
 export const businessSchema = z.object({
   businessName: z.string().min(1, "Business name is required"),
-  category: z.string().min(1, "Category is required"),
+  category_id: z.string().uuid("Please select a valid category"),
   address: z.string().optional(),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),

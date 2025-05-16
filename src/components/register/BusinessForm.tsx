@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/form';
 import { BusinessFormData } from '@/schemas/registerSchema';
 import { UseFormReturn } from 'react-hook-form';
+import { Category, categoryService } from '@/services/categoryService';
+import { Loader2 } from 'lucide-react';
 
 interface BusinessFormProps {
   form: UseFormReturn<BusinessFormData>;
@@ -21,6 +23,25 @@ interface BusinessFormProps {
 }
 
 const BusinessForm: React.FC<BusinessFormProps> = ({ form, onNext, onPrev }) => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      console.log('Starting to load categories...');
+      try {
+        const data = await categoryService.getAllCategories();
+        console.log('Categories loaded successfully:', data);
+        setCategories(data);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onNext)} className="space-y-6">
@@ -41,22 +62,26 @@ const BusinessForm: React.FC<BusinessFormProps> = ({ form, onNext, onPrev }) => 
           
           <FormField
             control={form.control}
-            name="category"
+            name="category_id"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Business Category</FormLabel>
                 <FormControl>
                   <select
                     {...field}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:text-sm h-10"
+                    disabled={isLoading}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:text-sm h-10 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value="">Select a category</option>
-                    <option value="web-development">Web Development & IT</option>
-                    <option value="accounting">Accounting Services</option>
-                    <option value="marketing">Digital Marketing</option>
-                    <option value="real-estate">Real Estate & Builders</option>
-                    <option value="healthcare">Healthcare Services</option>
-                    {/* More options would be added here */}
+                    {isLoading ? (
+                      <option value="" disabled>Loading categories...</option>
+                    ) : (
+                      categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </FormControl>
                 <FormMessage />
