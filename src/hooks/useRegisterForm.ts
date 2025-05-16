@@ -43,7 +43,7 @@ export const useRegisterForm = () => {
     resolver: zodResolver(businessSchema),
     defaultValues: {
       businessName: '',
-      category_id: '',
+      category: '',
       address: '',
       city: 'Raipur',
       state: 'Chhattisgarh',
@@ -224,7 +224,7 @@ export const useRegisterForm = () => {
           owner_id: currentUserId,
           name: completeFormData.businessName as string,
           description: completeFormData.description as string,
-          category: completeFormData.category_id as string,
+          category: completeFormData.category as string,
           address: completeFormData.address || undefined,
           city: completeFormData.city as string,
           state: completeFormData.state as string,

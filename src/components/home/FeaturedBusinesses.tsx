@@ -12,9 +12,12 @@ const FeaturedBusinesses = () => {
     const fetchFeaturedBusinesses = async () => {
       try {
         const { data, error } = await supabase
-        .from('businesses')
-        .select('*')
-        .eq('payment_status', 'DONE')
+          .from('businesses')
+          .select(`
+            *,
+            categories:category(name)
+          `)
+          .eq('payment_status', 'DONE')
           .limit(6);
         
         if (error) {
@@ -27,7 +30,7 @@ const FeaturedBusinesses = () => {
           (data as any[]).map((b) => ({
             id: b.id,  
             name: b.name,
-            category: b.category,
+            category: b.categories?.name || b.category,
             address: b.address || b.location || '',
             cover_image: b.cover_image || b.coverImage || b.imageUrl || '',
             logo_url: b.logo_url || b.logo || '',
@@ -58,10 +61,10 @@ const FeaturedBusinesses = () => {
               Discover top-rated businesses in Raipur that are part of the CBN network.
             </p>
           </div>
-          <Link to="/businesses" className="mt-4 md:mt-0 inline-flex items-center text-bcircle-blue hover:text-bcircle-orange transition-colors font-medium">
+          {/* <Link to="/businesses" className="mt-4 md:mt-0 inline-flex items-center text-bcircle-blue hover:text-bcircle-orange transition-colors font-medium">
             View All Businesses
             <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
+          </Link> */}
         </div>
 
         {loading ? (

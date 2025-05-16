@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +14,13 @@ import { BusinessFormData } from '@/schemas/registerSchema';
 import { UseFormReturn } from 'react-hook-form';
 import { Category, categoryService } from '@/services/categoryService';
 import { Loader2 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 interface BusinessFormProps {
   form: UseFormReturn<BusinessFormData>;
@@ -62,28 +68,24 @@ const BusinessForm: React.FC<BusinessFormProps> = ({ form, onNext, onPrev }) => 
           
           <FormField
             control={form.control}
-            name="category_id"
+            name="category"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Business Category</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    disabled={isLoading}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:text-sm h-10 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <option value="">Select a category</option>
-                    {isLoading ? (
-                      <option value="" disabled>Loading categories...</option>
-                    ) : (
-                      categories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                </FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.name}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

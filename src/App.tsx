@@ -53,6 +53,7 @@ const App = () => (
             
             {/* Protected Routes (require authentication) */}
             <Route path="/categories" element={<AuthGuard><Categories /></AuthGuard>} />
+            <Route path="/categories/:id" element={<AuthGuard><BusinessDirectory /></AuthGuard>} />
             <Route path="/complete-registration" element={<AuthRoute><CompleteRegistration /></AuthRoute>} />
             <Route path="/businesses" element={<AuthGuard><BusinessDirectory /></AuthGuard>} />
             <Route path="/business/:slug" element={<AuthGuard><BusinessDetails /></AuthGuard>} />

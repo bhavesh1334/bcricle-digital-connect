@@ -46,7 +46,7 @@ const HeroSection = () => {
               <Link to="/register">Join Now</Link>
             </Button>}
             <Button asChild size="lg" variant="outline" className="border-white text-white bg-white/5 hover:bg-white/10">
-              <Link to="/businesses">
+              <Link to="/categories">
                 Explore Chhattisgarh Business Network
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

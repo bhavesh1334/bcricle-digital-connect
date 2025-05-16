@@ -153,10 +153,10 @@ console.log(photosData,"photosData")
             </Alert>
             <div className="mt-4">
               <button
-                onClick={() => navigate('/businesses')}
+                onClick={() => navigate(-1)}
                 className="text-bcircle-blue hover:text-bcircle-blue/80"
               >
-                ← Back to Business Directory
+                ← Back 
               </button>
             </div>
           </div>

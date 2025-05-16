@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom'; // Import Link
+import { Link, useParams } from 'react-router-dom'; // Import Link
 import { Search, MapPin, Phone, Filter, AlertCircle } from 'lucide-react';
 import AdSlider from '@/components/common/AdSlider';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,7 +34,6 @@ interface Business {
 
 const BusinessDirectory = () => {
   const [filter, setFilter] = useState({
-    category: '',
     location: '',
     verified: false,
   });  
@@ -45,17 +44,56 @@ const BusinessDirectory = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [allBusinesses, setAllBusinesses] = useState<Business[]>([]);
+  const [categoryName, setCategoryName] = useState<string>('');
+  const { id } = useParams<{ id: string }>();
+
+  // Fetch category name when id changes
+  useEffect(() => {
+    const fetchCategoryName = async () => {
+      if (id) {
+        try {
+          const { data, error } = await supabase
+            .from('categories')
+            .select('name')
+            .eq('id', id)
+            .single();
+
+          if (error) throw error;
+          setCategoryName(data?.name || '');
+        } catch (err) {
+          console.error('Error fetching category name:', err);
+          setCategoryName('');
+        }
+      }
+    };
+
+    fetchCategoryName();
+  }, [id]);
 
   // Async function to fetch businesses from API
   const fetchBusinessesFromApi = async (): Promise<Business[]> => {
     try {
-      const { data, error } = await supabase
+      const query = supabase
         .from('businesses')
-        .select('*')
+        .select(`
+          *,
+          categories:category(name)
+        `)
         .eq('payment_status', 'DONE');
 
+      if (id) {
+        (query as any).eq('category', id);
+      }
+
+      const { data, error } = await query;
+
       if (error) throw error;
-      return data as Business[];
+      
+      // Transform the data to include category name
+      return (data as any[]).map(business => ({
+        ...business,
+        category: business.categories?.name || business.category
+      })) as Business[];
     } catch (err) {
       console.error('Error fetching businesses:', err);
       throw err;
@@ -76,28 +114,20 @@ const BusinessDirectory = () => {
       }
     };
     getBusinesses();
-  }, []);
+  }, [id]); // Re-fetch when category ID changes
 
   // Update filtered businesses when allBusinesses, searchTerm, or filter changes
   useEffect(() => {
     let filtered = allBusinesses;
 
-    // Apply search filter - search in name, category, and address
+    // Apply search filter - search in name and address
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(business =>
         business.name.toLowerCase().includes(searchLower) ||
-        business.category.toLowerCase().includes(searchLower) ||
         (business.address?.toLowerCase().includes(searchLower) ?? false) ||
         (business.city?.toLowerCase().includes(searchLower) ?? false) ||
         business.state.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // Apply category filter
-    if (filter.category) {
-      filtered = filtered.filter(business => 
-        business.category.toLowerCase() === filter.category.toLowerCase()
       );
     }
 
@@ -258,7 +288,7 @@ const BusinessDirectory = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white h-5 w-5" />
                     <Input
                       type="search"
-                      placeholder="Search by name, category, or location..."
+                      placeholder="Search by name, location..."
                       className="pl-10 pr-4 w-full bg-white/20 border-white/30 text-white placeholder:text-white/80 focus:border-white rounded-lg h-12 outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-200"
                       value={searchTerm}
                       onChange={handleSearch}
@@ -282,24 +312,6 @@ const BusinessDirectory = () => {
                   </div>
                   
                   <div className="space-y-6">
-                    {/* Category Filter */}
-                    <div>
-                      <h3 className="text-sm font-medium mb-2">Category</h3>
-                      <select
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-bcircle-blue focus:ring-bcircle-blue sm:text-sm h-10 px-3 py-2 bg-white border"
-                        value={filter.category}
-                        onChange={(e) => setFilter({...filter, category: e.target.value})}
-                      >
-                        <option value="">All Categories</option>
-                        <option value="web-development">Web Development & IT</option>
-                        <option value="accounting">Accounting Services</option>
-                        <option value="marketing">Digital Marketing</option>
-                        <option value="real-estate">Real Estate & Builders</option>
-                        <option value="healthcare">Healthcare Services</option>
-                        <option value="interior-design">Interior Design</option>
-                      </select>
-                    </div>
-                    
                     {/* Location Filter */}
                     <div>
                       <h3 className="text-sm font-medium mb-2">Location</h3>
@@ -343,15 +355,15 @@ const BusinessDirectory = () => {
                 <div className="bg-white rounded-lg p-8 text-center">
                   <h3 className="text-xl font-semibold text-gray-800 mb-2">No Businesses Found</h3>
                   <p className="text-gray-600 mb-4">
-                    {searchTerm || filter.category || filter.location || filter.verified
+                    {searchTerm || filter.location || filter.verified
                       ? "We couldn't find any businesses matching your search criteria. Try adjusting your filters or search terms."
                       : "There are no businesses listed yet. Check back later for new listings."}
                   </p>
-                  {(searchTerm || filter.category || filter.location || filter.verified) && (
+                  {(searchTerm || filter.location || filter.verified) && (
                     <Button
                       onClick={() => {
                         setSearchTerm('');
-                        setFilter({ category: '', location: '', verified: false });
+                        setFilter({ location: '', verified: false });
                       }}
                       variant="outline"
                       className="text-bcircle-blue border-bcircle-blue hover:bg-bcircle-blue/10"
@@ -375,10 +387,12 @@ const BusinessDirectory = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="font-bold text-4xl md:text-5xl mb-6 animate-fade-in">
-              Explore Chhattisgarh's Businesses
+              {id ? `${categoryName} Businesses` : "Explore Chhattisgarh's Businesses"}
             </h1>
             <p className="text-xl max-w-2xl mx-auto text-white/80 animate-slide-up">
-              Discover and connect with the best local businesses in your area
+              {id 
+                ? `Discover and connect with the best ${categoryName.toLowerCase()} businesses in your area`
+                : "Discover and connect with the best local businesses in your area"}
             </p>
 
             {/* Search Bar */}
@@ -388,7 +402,7 @@ const BusinessDirectory = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white h-5 w-5" />
                   <Input
                     type="search"
-                    placeholder="Search by name, category, or location..."
+                    placeholder="Search by name, or location..."
                     className="pl-10 pr-4 w-full bg-white/20 border-white/30 text-white placeholder:text-white/80 focus:border-white rounded-lg h-12 outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-200"
                     value={searchTerm}
                     onChange={handleSearch}
@@ -416,24 +430,6 @@ const BusinessDirectory = () => {
                 </div>
                 
                 <div className="space-y-6">
-                  {/* Category Filter */}
-                  <div>
-                    <h3 className="text-sm font-medium mb-2">Category</h3>
-                    <select
-                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-bcircle-blue focus:ring-bcircle-blue sm:text-sm h-10 px-3 py-2 bg-white border"
-                      value={filter.category}
-                      onChange={(e) => setFilter({...filter, category: e.target.value})}
-                    >
-                      <option value="">All Categories</option>
-                      <option value="web-development">Web Development & IT</option>
-                      <option value="accounting">Accounting Services</option>
-                      <option value="marketing">Digital Marketing</option>
-                      <option value="real-estate">Real Estate & Builders</option>
-                      <option value="healthcare">Healthcare Services</option>
-                      <option value="interior-design">Interior Design</option>
-                    </select>
-                  </div>
-                  
                   {/* Location Filter */}
                   <div>
                     <h3 className="text-sm font-medium mb-2">Location</h3>

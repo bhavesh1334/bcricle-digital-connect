@@ -141,3 +141,25 @@ export interface Database {
     }
   }
 }
+
+export interface Business {
+  id: string
+  created_at: string
+  name: string
+  description: string
+  category: string
+  address: string | null
+  city: string | null
+  state: string
+  pincode: string | null
+  logo_url: string | null
+  cover_image: string | null
+  website: string | null
+  instagram_link: string | null
+  whatsapp: string
+  founded: string | null
+  owner_id: string | null
+  payment_status: string | null
+  verified: boolean | null
+  updated_at: string | null
+}

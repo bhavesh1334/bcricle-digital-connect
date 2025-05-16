@@ -203,10 +203,10 @@ const Header = () => {
           </Link>
           
           <Link 
-            to="/businesses" 
+            to="/categories" 
             className={cn(
               "font-medium text-sm transition-colors",
-              isActive('/businesses') 
+              isActive('/categories') 
                 ? "text-bcircle-blue border-b-2 border-bcircle-blue pb-1" 
                 : "text-foreground hover:text-bcircle-blue"
             )}
@@ -322,10 +322,10 @@ const Header = () => {
               </Link>
               
               <Link 
-                to="/businesses" 
+                to="/categories" 
                 className={cn(
                   "py-2 border-b border-border",
-                  isActive('/businesses') 
+                  isActive('/categories') 
                     ? "text-bcircle-blue font-medium" 
                     : "text-foreground hover:text-bcircle-blue"
                 )}

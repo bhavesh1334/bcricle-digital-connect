@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdSlider from '@/components/common/AdSlider';
+import CategoryCard from '@/components/common/CategoryCard';
 import { categoryService } from '@/services/categoryService';
 import type { CategoryWithCount } from '@/services/categoryService';
 
@@ -154,21 +154,10 @@ const Categories: React.FC = () => {
             ) : paginatedCategories.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {paginatedCategories.map((category) => (
-                  <Link 
-                    key={category.id} 
-                    to={`/categories/${category.id}`}
-                    className="bg-white p-4 rounded-lg border border-border hover-lift flex justify-between items-center"
-                  >
-                    <div className="flex items-center gap-3">
-                      {category.icon && (
-                        <img src={category.icon} alt={category.name} className="w-8 h-8" />
-                      )}
-                      <span className="font-medium text-foreground">{category.name}</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground bg-bcircle-blue/10 px-2 py-1 rounded-full">
-                      {category.business_count}
-                    </span>
-                  </Link>
+                  <CategoryCard
+                    key={category.id}
+                    {...category}
+                  />
                 ))}
               </div>
             ) : (

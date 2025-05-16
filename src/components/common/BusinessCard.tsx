@@ -5,8 +5,8 @@ import { MapPin, CheckCircle } from 'lucide-react';
 export interface Business {
   id: string;
   name: string;
-  category: string;
-  address: string | null;
+  category?: string;
+  address?: string | null;
   cover_image: string | null;
   logo_url: string | null;
   description: string;
