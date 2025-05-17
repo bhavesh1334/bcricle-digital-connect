@@ -100,7 +100,7 @@ export const useRegisterForm = () => {
               email: step1Data.email,
               password: step1Data.password,
               options: {
-                emailRedirectTo: referrerId? `${window.location.origin}/register?ref=${referrerId}`:`${window.location.origin}/verify-email`,
+                emailRedirectTo: referrerId? `${window.location.origin}/verify-email?ref=${referrerId}`:`${window.location.origin}/verify-email`,
                 data: {
                   first_name: step1Data.firstName,
                   last_name: step1Data.lastName,
@@ -123,7 +123,13 @@ export const useRegisterForm = () => {
               title: "Account Created!",
               description: "Please check your email to verify your account before proceeding."
             });
-          navigate("/registration-success")
+            
+            const successParams = new URLSearchParams({
+              email: step1Data.email,
+              ...(referrerId && { ref: referrerId })
+            });
+            
+            navigate(`/registration-success?${successParams.toString()}`);
           } catch (error: any) {
             console.error('Error during signup:', error);
             toast({
