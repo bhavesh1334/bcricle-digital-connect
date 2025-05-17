@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { categoryService } from '@/services/categoryService';
 import type { CategoryWithCount } from '@/services/categoryService';
 
@@ -25,6 +24,17 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ icon, name, business_count,
       <h3 className="font-montserrat font-semibold text-lg mb-1 text-center group-hover:text-bcircle-blue transition-colors">{name}</h3>
       <p className="text-sm text-muted-foreground text-center">{business_count > 1 ? `${business_count} Businesses`: `${business_count} Business`}</p>
     </Link>
+  );
+};
+
+// Skeleton Card component
+const CategoryCardSkeleton = () => {
+  return (
+    <div className="flex flex-col items-center p-6 bg-white rounded-lg border border-border animate-pulse">
+      <div className="w-16 h-16 rounded-full bg-gray-200 mb-4"></div>
+      <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+    </div>
   );
 };
 
@@ -72,9 +82,11 @@ const FeaturedCategories = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {isLoading ? (
-            <div className="col-span-full flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-bcircle-blue" />
-            </div>
+            <>
+              {[...Array(9)].map((_, index) => (
+                <CategoryCardSkeleton key={index} />
+              ))}
+            </>
           ) : (
             categories.slice(0, 9).map((category) => (
               <CategoryCard 

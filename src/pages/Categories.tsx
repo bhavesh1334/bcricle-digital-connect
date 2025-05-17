@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Loader2 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdSlider from '@/components/common/AdSlider';
 import CategoryCard from '@/components/common/CategoryCard';
@@ -15,6 +15,17 @@ interface CategoryGroup {
 }
 
 const ITEMS_PER_PAGE = 12; // Number of items to show per page
+
+// Skeleton Card component
+const CategoryCardSkeleton = () => {
+  return (
+    <div className="flex flex-col items-center p-6 bg-white rounded-lg border border-border animate-pulse">
+      <div className="w-16 h-16 rounded-full bg-gray-200 mb-4"></div>
+      <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+    </div>
+  );
+};
 
 const adSlides = [
   {
@@ -148,14 +159,16 @@ const Categories: React.FC = () => {
         <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
             {isLoading ? (
-              <div className="flex justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-bcircle-blue" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {[...Array(ITEMS_PER_PAGE)].map((_, index) => (
+                  <CategoryCardSkeleton key={index} />
+                ))}
               </div>
             ) : paginatedCategories.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {paginatedCategories.map((category) => (
                   <CategoryCard
-                    key={category.id}
+                    key={category.id} 
                     {...category}
                   />
                 ))}
