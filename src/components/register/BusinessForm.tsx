@@ -80,7 +80,7 @@ const BusinessForm: React.FC<BusinessFormProps> = ({ form, onNext, onPrev }) => 
                   </FormControl>
                   <SelectContent>
                     {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.name}>
+                      <SelectItem key={category.id} value={category.id.toString()}>
                         {category.name}
                       </SelectItem>
                     ))}

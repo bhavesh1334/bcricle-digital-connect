@@ -43,14 +43,17 @@ const Profile = () => {
         // Fetch business details
         const { data: businessData, error: businessError } = await supabase
           .from('businesses')
-          .select('*')
+          .select(`
+            *,
+            categories:category(name)
+          `)
           .eq('owner_id', user.id)
           .maybeSingle();
-
         if (!businessError && businessData) {
-          const typedBusinessData = businessData as Business;
+          // Cast to unknown first to avoid type mismatch error
+          const typedBusinessData = businessData as unknown as Business;
           setBusiness(typedBusinessData);
-          setReferralCount(typedBusinessData.referral_count ?? 0);  // Use nullish coalescing for better type safety
+          setReferralCount(typedBusinessData.referral_count ?? 0);
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -314,7 +317,7 @@ const Profile = () => {
                     
                     <div>
                       <p className="text-sm text-gray-500">Category</p>
-                      <p>{business.category}</p>
+                      <p>{business.categories?.name}</p>
                     </div>
                     
                     <div>

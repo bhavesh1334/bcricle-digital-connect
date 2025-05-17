@@ -2,7 +2,8 @@ export interface Business {
   id: string;
   owner_id: string;
   name: string;
-  category: string;
+  categories: {name : string}
+  category:  string
   description: string;
   address?: string;
   city: string;

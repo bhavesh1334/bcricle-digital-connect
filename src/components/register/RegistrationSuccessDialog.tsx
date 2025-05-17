@@ -37,8 +37,8 @@ const RegistrationSuccessDialog: React.FC<RegistrationSuccessDialogProps> = ({
               asChild
               className="w-full bg-bcircle-blue hover:bg-bcircle-blue/90"
             >
-              <Link to="/">
-                Return to Home
+              <Link to="/profile">
+                  View Profile
               </Link>
             </Button>
             
